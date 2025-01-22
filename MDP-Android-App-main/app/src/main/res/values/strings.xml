@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">MDP Controller</string>
+    <string name="button_bluetooth_unconnected">Connect to a device</string>
+    <string name="button_bluetooth_connected">Connected to %1$s</string>
+    <string name="button_bluetooth_disconnected">Disconnected</string>
+    <string name="button_bluetooth_connecting">Connecting…</string>
+    <string name="disconnect_device">Disconnect device</string>
+    <string name="element_text">Device name</string>
+    <string name="stop_scan">Stop scan</string>
+    <string name="start_scan">Start scan</string>
+    <string name="connected">Connected</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="start_explore">Start Explore</string>
+    <string name="start_simulator">Check Valid Path</string>
+    <string name="stop_explore">Stop Explore</string>
+    <string name="clear_obstacles">Clear Obstacles</string>
+    <string name="set_obstacles">Set Obstacles</string>
+    <string name="set_robot">Set Robot</string>
+    <string name="time_placeholder">00:00</string>
+    <string name="start_fastest_path">Start Fastest Path</string>
+    <string name="stop_fastest_path">Stop Fastest Path</string>
+    <string name="done">Done</string>
+    <string name="set_btn_txt">Set %1$s</string>
+    <string name="debug_mode">Debug Mode</string>
+    <string name="reconnect_as_client">Connect As Client</string>
+    <string name="prevent_input_on_movement">Prevent Input On Movement</string>
+    <string name="robot_status">Robot Status</string>
+    <string name="x_y_dir">( - , - , - )</string>
+    <string name="idle">Idle</string>
+    <string name="calc_path">Calculating path...</string>
+    <string name="check_path">Checking path...</string>
+</resources>
