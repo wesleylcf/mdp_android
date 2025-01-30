@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 
 import com.example.mdpcontroller.BluetoothService;
 import com.example.mdpcontroller.R;
+import com.example.mdpcontroller.tab.ArenaIntent;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -51,7 +53,9 @@ public class ArenaView extends View {
     public int editingObs_orig_x;
     public int editingObs_orig_y;
     public static final int COLS = 20, ROWS = 20;
-    public boolean isEditMap, isSetRobot, isSetObstacles,obstacleSelected, obstacleEdit;
+    public boolean isEditMap, obstacleSelected, obstacleEdit;
+    public ArenaIntent arenaIntent;
+
     private float cellSize, hMargin, vMargin;
     private final Paint wallPaint,gridPaint,textPaint, robotBodyPaint, robotHeadPaint,obstaclePaint,
             exploredGridPaint, obstacleNumPaint, obstacleImageIDPaint, gridNumberPaint, obstacleHeadPaint,exploredObstaclePaint;
@@ -199,11 +203,11 @@ public class ArenaView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        if (!isSetObstacles && !isSetRobot && !obstacleEdit){
+        if (arenaIntent == ArenaIntent.UNSET && !obstacleEdit){
             scaleGrid(event);
             return true;
         }
-        if(isSetObstacles || isSetRobot){
+        if(arenaIntent != ArenaIntent.UNSET){
             isEditMap = true;
         }
 
@@ -227,7 +231,7 @@ public class ArenaView extends View {
                     System.out.println(x + " : " + y + " : " + rectX + " : " + rectY + " : " + hMargin + " : " + vMargin + " : " + cellSize);
                     System.out.println("Coordinates: (" + curCell.col + "," + curCell.row + ")");
                     if(isEditMap){
-                        if(isSetObstacles){
+                        if(arenaIntent == ArenaIntent.SETTING_OBSTACLES){
                             if(!obstacleSelected){
                                 if(curCell.type == "" && event.getAction()==MotionEvent.ACTION_UP){
                                     curCell.type = "obstacle";
@@ -258,7 +262,7 @@ public class ArenaView extends View {
                                 dragObstacle(event, entry.getKey(), editingObs);
                             }
 
-                        }else if(isSetRobot){
+                        }else if(arenaIntent == ArenaIntent.SETTING_ROBOT){
                             setRobot(curCell.col, curCell.row, "N");
                             if (event.getAction()==MotionEvent.ACTION_UP) {
                                 this.btService.write(String.format("Robot set at (%d, %d) facing %s", curCell.col, curCell.row, "N"), false);
@@ -268,7 +272,7 @@ public class ArenaView extends View {
                     else{
                         obstacleEdit = false;
                     }
-                } else if(obstacleSelected && editingObs != null && isSetObstacles){
+                } else if(obstacleSelected && editingObs != null && arenaIntent == ArenaIntent.SETTING_OBSTACLES){
                     //Obstacle delete
                     if(event.getAction() ==MotionEvent.ACTION_MOVE){
                         if(x < gridMap.get(maxLeft).centerX() || x > gridMap.get(maxRight).centerX()){

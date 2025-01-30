@@ -21,9 +21,7 @@ public class ExploreTabFragment extends Fragment {
     View view;
     public Button setRobotBtn;
     public Button setObstaclesBtn;
-
-    public boolean isSetRobot;
-    public boolean isSetObstacles;
+    public ArenaIntent arenaIntent;
     private boolean isRobotMove;
     private boolean isRobotStop;
     private boolean isReset;
@@ -33,8 +31,7 @@ public class ExploreTabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        isSetRobot = false;
-        isSetObstacles = false;
+        arenaIntent = ArenaIntent.UNSET;
         isRobotMove = false;
         isRobotStop = false;
         isReset = false;
@@ -43,50 +40,36 @@ public class ExploreTabFragment extends Fragment {
         setRobotBtn = view.findViewById(R.id.setRobot);
         setObstaclesBtn = view.findViewById(R.id.setObstacles);
         appDataModel = new ViewModelProvider(requireActivity()).get(AppDataModel.class);
-        appDataModel.setIsSetObstacles(isSetObstacles);
-        appDataModel.setIsSetRobot(isSetRobot);
+        appDataModel.setArenaIntent(arenaIntent);
 
-        setRobotBtn.setOnClickListener(item ->{
-            if(isSetObstacles){
-                isSetObstacles = false;
-                setObstaclesBtn.setText(R.string.set_obstacles);
-                isSetRobot = btnAction(isSetRobot, setRobotBtn, "robot");
-            }else{
-                isSetRobot = btnAction(isSetRobot, setRobotBtn, "robot");
+        setRobotBtn.setOnClickListener(item -> {
+            if (arenaIntent == ArenaIntent.SETTING_OBSTACLES) {
+                return;
             }
-            appDataModel.setIsSetObstacles(isSetObstacles);
-            appDataModel.setIsSetRobot(isSetRobot);
+            if (arenaIntent == ArenaIntent.UNSET) {
+                arenaIntent = ArenaIntent.SETTING_ROBOT;
+                setRobotBtn.setText(R.string.done);
+            } else if (arenaIntent == ArenaIntent.SETTING_ROBOT) {
+                arenaIntent = ArenaIntent.UNSET;
+                setRobotBtn.setText(String.format(getString(R.string.set_btn_txt), "robot"));
+            }
+            appDataModel.setArenaIntent(arenaIntent);
         });
-        setObstaclesBtn.setOnClickListener(item ->{
-            if(isSetRobot){
-                isSetRobot = false;
-                setRobotBtn.setText(R.string.set_robot);
-                isSetObstacles = btnAction(isSetObstacles, setObstaclesBtn, "obstacles");
-            }else{
-                isSetObstacles = btnAction(isSetObstacles, setObstaclesBtn, "obstacles");
-            }
 
-            appDataModel.setIsSetObstacles(isSetObstacles);
-            appDataModel.setIsSetRobot(isSetRobot);
+        setObstaclesBtn.setOnClickListener(item -> {
+            if (arenaIntent == ArenaIntent.SETTING_ROBOT) {
+                return;
+            }
+            if (arenaIntent == ArenaIntent.UNSET) {
+                arenaIntent = ArenaIntent.SETTING_OBSTACLES;
+                setObstaclesBtn.setText(R.string.done);
+            } else if (arenaIntent == ArenaIntent.SETTING_OBSTACLES) {
+                arenaIntent = ArenaIntent.UNSET;
+                setObstaclesBtn.setText(String.format(getString(R.string.set_btn_txt), "obstacles"));
+            }
+            appDataModel.setArenaIntent(arenaIntent);
         });
 
         return view;
-    }
-
-    private boolean btnAction(boolean btnVal, Button btn, String btnText){
-        // ensure that obstacles and robot are only set when bluetooth is connected
-//        if (BluetoothService.getBtStatus() != BluetoothService.BluetoothStatus.CONNECTED){
-//            Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
-        if(btnVal){
-            btnVal = false;
-            btn.setText(String.format(getString(R.string.set_btn_txt), btnText));
-        }
-        else{
-            btnVal = true;
-            btn.setText(R.string.done);
-        }
-        return btnVal;
     }
 }

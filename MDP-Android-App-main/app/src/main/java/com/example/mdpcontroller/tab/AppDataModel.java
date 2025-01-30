@@ -5,24 +5,18 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class AppDataModel extends ViewModel {
-    private final MutableLiveData<Boolean> isSetRobot = new MutableLiveData<Boolean>();
+    private final MutableLiveData<ArenaIntent> arenaIntent = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isRobotMove = new MutableLiveData<Boolean>();
-    private final MutableLiveData<Boolean> isSetObstacles = new MutableLiveData<Boolean>();
     private final MutableLiveData<Boolean> isRobotStop = new MutableLiveData<Boolean>();
     private final MutableLiveData<Boolean> isReset = new MutableLiveData<Boolean>();
     private final MutableLiveData<String> robotDirection = new MutableLiveData<String>();
 
-    public void setIsSetRobot(Boolean item) {
-        isSetRobot.setValue(item);
+    public void setArenaIntent(ArenaIntent intent) {
+        arenaIntent.setValue(intent);
     }
-    public LiveData<Boolean> getIsSetRobot() {
-        return isSetRobot;
-    }
-    public void setIsSetObstacles(Boolean item) {
-        isSetObstacles.setValue(item);
-    }
-    public LiveData<Boolean> getIsSetObstacles() {
-        return isSetObstacles;
+
+    public LiveData<ArenaIntent> getArenaIntent() {
+        return arenaIntent;
     }
     public void setRobotMove(Boolean item) {
         isRobotMove.setValue(item);

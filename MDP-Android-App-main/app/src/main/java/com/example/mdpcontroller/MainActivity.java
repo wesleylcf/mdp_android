@@ -35,6 +35,7 @@ import com.example.mdpcontroller.arena.Obstacle;
 import com.example.mdpcontroller.arena.ObstacleDialogueFragment;
 import com.example.mdpcontroller.arena.Robot;
 import com.example.mdpcontroller.tab.AppDataModel;
+import com.example.mdpcontroller.tab.ArenaIntent;
 import com.example.mdpcontroller.tab.ExploreTabFragment;
 import com.example.mdpcontroller.tab.ManualTabFragment;
 import com.example.mdpcontroller.tab.PathTabFragment;
@@ -106,11 +107,8 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 
         appDataModel = new ViewModelProvider(this).get(AppDataModel.class);
 
-        appDataModel.getIsSetRobot().observe(this, data -> {
-            arena.isSetRobot = data;
-        });
-        appDataModel.getIsSetObstacles().observe(this, data -> {
-            arena.isSetObstacles = data;
+        appDataModel.getArenaIntent().observe(this, data -> {
+            arena.arenaIntent = data;
         });
         displayMessage("Status updates will appear here");
         arena.setEventListener(new ArenaView.DataEventListener() {
@@ -612,10 +610,10 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     private void toggleActivateButtons(boolean val){
         // deactivate obstacle and robot setting when robot is moving
         try{
-            if (appDataModel.getIsSetObstacles().getValue()) {
+            if (appDataModel.getArenaIntent().getValue() == ArenaIntent.SETTING_OBSTACLES) {
                 findViewById(R.id.setObstacles).callOnClick();
             }
-            if (appDataModel.getIsSetRobot().getValue()) {
+            if (appDataModel.getArenaIntent().getValue() == ArenaIntent.SETTING_ROBOT) {
                 findViewById(R.id.setRobot).callOnClick();
             }
             findViewById(R.id.setObstacles).setEnabled(val);
