@@ -102,12 +102,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         // Make device discoverable and accept connections
         btService.serverStartListen(this);
 
-        // register event receivers
-        registerReceiver(msgReceiver, new IntentFilter("message_received"));
-        conReceiver = new BtStatusChangedReceiver(this);
-        registerReceiver(conReceiver, new IntentFilter("bt_status_changed"));
-        btLostReceiver = btService.new BluetoothLostReceiver(this);
-        registerReceiver(btLostReceiver, new IntentFilter("bt_status_changed"));
+        registerBroadcastReceivers();
 
         appDataModel = new ViewModelProvider(this).get(AppDataModel.class);
 
@@ -132,6 +127,17 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         setConnectBtn();
     }
 
+    /*
+    * BroadcastReceiver is event-driven, where the event key is specified in the Intent.
+    * */
+    private void registerBroadcastReceivers() {
+        registerReceiver(msgReceiver, new IntentFilter("message_received"));
+        conReceiver = new BtStatusChangedReceiver(this);
+        registerReceiver(conReceiver, new IntentFilter("bt_status_changed"));
+        btLostReceiver = btService.new BluetoothLostReceiver(this);
+        registerReceiver(btLostReceiver, new IntentFilter("bt_status_changed"));
+    }
+
     //BlueTooth
     public void btConnect_onPress(View view) {
         // connect as server
@@ -145,8 +151,12 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         }
     }
 
-    // Create a BroadcastReceiver for message_received.
+    // BroadcastReceiver used to parse messages received over bluetooth.
     private final BroadcastReceiver msgReceiver = new BroadcastReceiver() {
+        /*
+         * Can parse multiple commands as a single string if they are delimited with '&', probably to minimize communication overhead.
+         * Each command has a structure <command_name>,...<command arg>
+         * */
         public void onReceive(Context context, Intent intent) {
             String fullMessage =  intent.getExtras().getString("message");
             if (DEBUG) {
@@ -178,11 +188,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                             }
                             break;
                         }
-//                        case("ROBOT_STATUS"):{
-//                            TextView robotPosTextView = findViewById(R.id.robotPosTextView);
-//                            if (robotPosTextView != null) robotPosTextView.setText(messageArr[1]);
-//                            break;
-//                        }
                         // Format: STATUS/<msg>
                         case ("STATUS"): {
 //                            displayMessage("Status update\n" + messageArr[1]);
