@@ -36,7 +36,7 @@
         android:onClick="startStopTimer"
         android:text="@string/start_fastest_path"
         android:textSize="16sp"
-        app:backgroundTint="#673AB7"
+        app:backgroundTint="@color/primary_400"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

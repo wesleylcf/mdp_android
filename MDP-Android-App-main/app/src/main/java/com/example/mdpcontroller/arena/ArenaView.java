@@ -94,7 +94,7 @@ public class ArenaView extends View {
         obstacleNumPaint = new Paint();
         obstacleNumPaint.setColor(getResources().getColor(R.color.white));
         obstacleHeadPaint = new Paint();
-        obstacleHeadPaint.setColor(getResources().getColor(R.color.red_500));
+        obstacleHeadPaint.setColor(getResources().getColor(R.color.primary_400));
         exploredObstaclePaint = new Paint();
         exploredObstaclePaint.setColor(getResources().getColor(R.color.green_500));
         gridNumberPaint = new Paint();
@@ -457,7 +457,7 @@ public class ArenaView extends View {
 
     public Boolean setRobot(int xCenter, int yCenter,  String dir){
         if(yCenter<1 || yCenter>=ROWS-1 || xCenter>=COLS-1 || xCenter<1){
-            System.out.println("Out of bound : Robot need six cells");
+            System.out.println("Out of bounds: Robot need nine cells");
             return false;
         }else{
             boolean valid = Robot.setRobot(xCenter, yCenter, dir,obstacles);

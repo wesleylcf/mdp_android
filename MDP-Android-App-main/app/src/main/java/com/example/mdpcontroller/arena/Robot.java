@@ -44,7 +44,7 @@ public class Robot {
         int yTopLeft=yCenter-1, xTopLeft= xCenter-1;
         Cell curCell;
         if(yCenter<1 || yCenter>=19 || xCenter>=19 || xCenter<1){
-            System.out.println("Out of bound : Robot need six cells");
+            System.out.println("Out of bounds: Robot need nine cells");
         }else{
             // wipe old robot position
             if (robotMatrix[0][0] != null){ // skip on initial robot set

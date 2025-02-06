@@ -18,7 +18,7 @@
         android:layout_marginRight="16dp"
         android:onClick="btConnect_onPress"
         android:text="@string/button_bluetooth_unconnected"
-        app:backgroundTint="@color/purple_300"
+        app:backgroundTint="@color/primary_400"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

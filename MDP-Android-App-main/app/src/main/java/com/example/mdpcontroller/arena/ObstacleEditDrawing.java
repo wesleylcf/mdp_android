@@ -27,7 +27,7 @@ public class ObstacleEditDrawing extends View{
         obstacleNumPaint = new Paint();
         obstacleNumPaint.setColor(getResources().getColor(R.color.white));
         obstacleHeadPaint = new Paint();
-        obstacleHeadPaint.setColor(getResources().getColor(R.color.red_500));
+        obstacleHeadPaint.setColor(getResources().getColor(R.color.primary_400));
     }
     @Override
     protected  void onDraw(Canvas canvas){

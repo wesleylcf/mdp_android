@@ -26,5 +26,6 @@
     <color name="orange_700">#C2410C</color>
     <color name="orange_500">#F97316</color>
     <color name="orange_400">#FB923C</color>
+    <color name="primary_400">#FFAE00</color>
     <color name="transparent">#0000ffff</color>
 </resources>

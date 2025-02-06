@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:onClick="chatBtn"
         android:text="Send"
-        app:backgroundTint="#673AB7"
+        app:backgroundTint="@color/primary_400"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_guideline70" />
