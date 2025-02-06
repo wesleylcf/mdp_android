@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">14sp</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="ExploreTabButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="backgroundTint">@color/gray_d9</item>
+    </style>
+</resources>

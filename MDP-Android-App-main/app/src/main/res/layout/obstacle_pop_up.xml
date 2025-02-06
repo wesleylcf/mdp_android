@@ -16,7 +16,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/white">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/top_guideline7"
@@ -120,7 +121,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Image Direction: "
+                android:text="Image Location: "
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/top_guideline14"
                 app:layout_constraintStart_toStartOf="@+id/imageDirSpinner"
@@ -192,7 +193,8 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Submit"
+                android:text="Done"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toTopOf="@+id/top_guideline25"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -209,6 +211,8 @@
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="8dp"
                 android:text="Cancel"
+                android:textColor="@color/black"
+                app:backgroundTint="@color/gray_d9"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

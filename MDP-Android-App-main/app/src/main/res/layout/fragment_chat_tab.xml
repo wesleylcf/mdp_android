@@ -5,17 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="@color/gray_800"
+    android:background="#3C4148"
     tools:context=".tab.ChatTabFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/top_guideline70"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/purple_200"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.66" />
-
 
     <EditText
         android:id="@+id/chatEditText"
@@ -24,15 +22,15 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="8dp"
-        android:background="@drawable/rounded_corner_gray_700"
+        android:background="@drawable/rounded_corner_gray_d9"
         android:fontFamily="sans-serif"
         android:gravity="center"
-        android:hint="Input some text!"
+        android:hint="Input some text"
         android:inputType="textPersonName|textCapWords"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textColor="@color/white"
-        android:textColorHint="#FFFFFF"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_600"
         app:layout_constraintBottom_toTopOf="@+id/top_guideline70"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -41,14 +39,21 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <!-- the onClick is just to check it does do something-->
+
     <Button
         android:id="@+id/sendBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="chatBtn"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:text="Send"
+        android:textColor="@color/black"
+        android:textStyle="bold"
         app:backgroundTint="@color/primary_400"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:cornerRadius="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/clearLogsBtn"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/top_guideline70" />
 
@@ -59,11 +64,25 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:onClick="clearLogsBtn"
-        android:text="Clear Logs"
-        android:textSize="10sp"
-        app:backgroundTint="#7E7E7E"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="Clear"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:backgroundTint="#C7C7C7"
+        app:cornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/sendBtn"
         app:layout_constraintTop_toTopOf="@+id/top_guideline70" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
