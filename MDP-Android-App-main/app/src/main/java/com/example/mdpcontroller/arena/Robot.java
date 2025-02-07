@@ -172,27 +172,27 @@ public class Robot {
         ArrayList<String> backwardTurns = new ArrayList<>(Arrays.asList("BL", "BR"));
         int xCenter = robotMatrix[1][1].col, yCenter = robotMatrix[1][1].row;
         if (forwardTurns.contains(movement)) {
-            if (dir.equals("E")) xCenter += 2;
-            else if (dir.equals("N")) yCenter -= 2;
-            else if (dir.equals("W")) xCenter -= 2;
-            else if (dir.equals("S")) yCenter += 2;
+            if (dir.equals("E")) xCenter += 3;
+            else if (dir.equals("N")) yCenter -= 3;
+            else if (dir.equals("W")) xCenter -= 3;
+            else if (dir.equals("S")) yCenter += 3;
 
             for (int x = xCenter - 1; x <= xCenter + 1; x++) {
                 for (int y = yCenter - 1; y <= yCenter + 1; y++) {
                     // contains an obstacle
                     for (Obstacle obs : obstacles) {
                         if (obs.cell.col == x && obs.cell.row == y) {
-                            System.out.println("[isValidMove] Contains obstacle");
+                            System.out.println(String.format("[isValidMove] Contains obstacle(%d, %d)", x, y));
                             return false;
                         }
                     }
                 }
             }
         } else if (backwardTurns.contains(movement)) {
-            if (dir.equals("E")) xCenter -= 2;
-            else if (dir.equals("N")) yCenter += 2;
-            else if (dir.equals("W")) xCenter += 2;
-            else if (dir.equals("S")) yCenter -= 2;
+            if (dir.equals("E")) xCenter -= 3;
+            else if (dir.equals("N")) yCenter += 3;
+            else if (dir.equals("W")) xCenter += 3;
+            else if (dir.equals("S")) yCenter -= 3;
 
             for (int x = xCenter - 1; x <= xCenter + 1; x++) {
                 for (int y = yCenter - 1; y <= yCenter + 1; y++) {
