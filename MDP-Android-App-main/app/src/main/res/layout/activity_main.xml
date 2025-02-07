@@ -31,8 +31,8 @@
     <view
         android:id="@+id/arena"
         class="com.example.mdpcontroller.arena.ArenaView"
-        android:layout_width="386dp"
-        android:layout_height="380dp"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
         android:layout_gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/btm_guideline_3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,14 +42,11 @@
 
     <ScrollView
         android:id="@+id/SCROLLER_ID"
-        android:layout_width="387dp"
-        android:layout_height="95dp"
+        android:layout_width="500dp"
+        android:layout_height="120dp"
         android:background="@drawable/rounded_corner_gray_700"
         android:fillViewport="true"
-        android:paddingLeft="15dp"
-        android:paddingTop="10dp"
-        android:paddingRight="5dp"
-        android:paddingBottom="10dp"
+        android:padding="10dp"
         android:scrollbarSize="6dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/btm_guideline_2"
@@ -82,13 +79,13 @@
         app:layout_constraintTop_toBottomOf="@+id/button_connect"
         app:layout_constraintVertical_bias="1.0"
         app:tabBackground="@drawable/tab_selector"
-        app:tabTextAppearance="@style/TabTextAppearance"
-        app:tabSelectedTextColor="@color/white_800"
-        app:tabTextColor="@color/white"
-        app:tabGravity="center"
         app:tabIndicatorColor="@color/transparent"
         app:tabIndicatorGravity="stretch"
-        app:tabMode="fixed">
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabSelectedTextColor="@color/white_800"
+        app:tabTextAppearance="@style/TabTextAppearance"
+        app:tabTextColor="@color/white">
 
     </com.google.android.material.tabs.TabLayout>
 
@@ -100,7 +97,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_connect"
+        app:layout_constraintTop_toTopOf="@+id/btm_guideline_4"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="SpeakableTextPresentCheck">
 
@@ -125,7 +122,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="16dp" />
+        app:layout_constraintGuide_begin="30dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/btm_guideline_2"
@@ -146,7 +143,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="548dp" />
+        app:layout_constraintGuide_begin="680dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/btm_guideline_5"
@@ -160,6 +157,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_end="147dp" />
+        app:layout_constraintGuide_percent="0.8002736" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

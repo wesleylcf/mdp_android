@@ -343,7 +343,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         }
         else if (BluetoothService.getBtStatus() == BluetoothService.BluetoothStatus.UNCONNECTED) {
             bt.setText(R.string.button_bluetooth_unconnected);
-            bt.setBackgroundColor(getResources().getColor(R.color.primary_400));
+//            bt.setBackgroundColor(getResources().getColor(R.color.primary_400));
         }
         else if (BluetoothService.getBtStatus() == BluetoothService.BluetoothStatus.DISCONNECTED) {
             bt.setText(getResources().getString(R.string.button_bluetooth_disconnected));
