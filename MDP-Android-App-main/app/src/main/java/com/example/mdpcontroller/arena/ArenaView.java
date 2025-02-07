@@ -73,7 +73,6 @@ public class ArenaView extends View {
         createArena();
         Robot.initializeRobot(cells);
         detector = new ScaleGestureDetector(getContext(), new ScaleListener());
-
         wallPaint = new Paint();
         wallPaint.setColor(getResources().getColor(R.color.transparent));
         gridPaint = new Paint();
