@@ -460,9 +460,9 @@ public class ArenaView extends View {
             System.out.println("Out of bounds: Robot need nine cells");
             return false;
         }else{
-            boolean valid = Robot.setRobot(xCenter, yCenter, dir,obstacles);
+            boolean success = Robot.setRobot(xCenter, yCenter, dir,obstacles);
             invalidate();
-            return valid;
+            return success;
         }
     }
     public String moveRobot(String dir,String movement){

@@ -1,6 +1,7 @@
 package com.example.mdpcontroller.arena;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * I look like this
@@ -24,15 +25,19 @@ public class Robot {
         robotMatrix[1][1] = null;
         grid = cells;
     }
+
+    public static void printState() {
+        System.out.println(String.format("DIRECTION=%s", robotDir));
+    }
     public static boolean setRobot(int xCenter, int yCenter,  String dir, ArrayList<Obstacle> obstacles){
-        boolean obsFlag = checkObs(xCenter,yCenter,obstacles);
-        if(!obsFlag){
-            setRobotPosition(xCenter, yCenter);
-            setRobotDirection(dir);
-            return true;
-        } else {
+        if (!isValidNewPosition(xCenter, yCenter, obstacles)) {
+            System.out.println("[setRobot] Invalid position");
             return false;
         }
+
+        setRobotPosition(xCenter, yCenter);
+        setRobotDirection(dir);
+        return true;
     }
     /**
      * Does NOT validate if position is valid, Robot should not know about the state of the grid
@@ -72,6 +77,7 @@ public class Robot {
      * @param dir Possible values: N, S, E, W
      */
     private static void setRobotDirection(String dir){
+        robotDir = dir;
         // get head
         int xHead =1 , yHead = 0; // Default is N
         switch(dir){
@@ -99,24 +105,31 @@ public class Robot {
     }
 
     /**
-     * Check whether at least one of the new robot cells is obstacle
-     * @param xCenter x Coordinate of new centre of robot
-     * @param yCenter y Coordinate of new centre of robot
+     * Check whether at least one of the new robot cells is an obstacle.
+     * @param xCenter row of new centre of robot in the 2D array arena
+     * @param yCenter col of new centre of robot in the 2D array arena
      * @param obstacles list of plotted obstacles
      */
-    private static boolean checkObs(int xCenter,int yCenter,ArrayList<Obstacle> obstacles){
-        int yTopLeft=yCenter-1, xTopLeft= xCenter-1;
-        for (int i=0; i<robotMatrix[0].length; i++){ // iterate through rows: i = x coordinate
-            for (int j=0; j<robotMatrix.length; j++){ // iterate through cols: j = y coordinate
-                for(Obstacle obs: obstacles ){
-                    if((obs.cell.col == xTopLeft+i) &&(obs.cell.row == yTopLeft+j)){
-                        return true;
+    private static boolean isValidNewPosition(int xCenter, int yCenter, ArrayList<Obstacle> obstacles) {
+        for (int x = xCenter - 1; x <= xCenter + 1; x++) {
+            for (int y = yCenter - 1; y <= yCenter + 1; y++) {
+                // contains an obstacle
+                for (Obstacle obs : obstacles) {
+                    if (obs.cell.col == x && obs.cell.row == y) {
+                        System.out.println(String.format("[isValidNewPosition] Contains obstacle(%d,%d)", x, y));
+                        return false;
                     }
+                }
+                // is out of bounds
+                if (xCenter-1 < 0 || xCenter+1 > 19 || yCenter-1 < 0 || yCenter > 19) {
+                    System.out.println(String.format("[isValidNewPosition] Out of bounds: (%d, %d)", xCenter, yCenter));
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
+
     /**
      * All the robot movement
      * @param dir current direction of the robot
@@ -124,6 +137,10 @@ public class Robot {
      * @param obstacles list of current obstacles
      */
     public static void moveRobot(String dir,String movement,ArrayList<Obstacle> obstacles){
+        if (!isValidMove(dir, movement, obstacles)) {
+            return;
+        }
+
         switch(movement){
             case("F"):
             case("B"):
@@ -142,7 +159,56 @@ public class Robot {
                 reverseRight(dir,obstacles);
                 break;
         }
+        return;
     }
+
+    /*
+    * For turns, we need to check both the adjacent 3x3 cell in addition to the target 3x3 cell.
+    * The intuition is that to get to a diagonal cell, we need to first move to the adjacent cell.
+    * For example from (0,0) if we turn right, we go to (0,1) first then (1,1)
+    * */
+    public static boolean isValidMove(String dir, String movement, ArrayList<Obstacle> obstacles) {
+        ArrayList<String> forwardTurns = new ArrayList<>(Arrays.asList("L", "R"));
+        ArrayList<String> backwardTurns = new ArrayList<>(Arrays.asList("BL", "BR"));
+        int xCenter = robotMatrix[1][1].col, yCenter = robotMatrix[1][1].row;
+        if (forwardTurns.contains(movement)) {
+            if (dir.equals("E")) xCenter += 2;
+            else if (dir.equals("N")) yCenter -= 2;
+            else if (dir.equals("W")) xCenter -= 2;
+            else if (dir.equals("S")) yCenter += 2;
+
+            for (int x = xCenter - 1; x <= xCenter + 1; x++) {
+                for (int y = yCenter - 1; y <= yCenter + 1; y++) {
+                    // contains an obstacle
+                    for (Obstacle obs : obstacles) {
+                        if (obs.cell.col == x && obs.cell.row == y) {
+                            System.out.println("[isValidMove] Contains obstacle");
+                            return false;
+                        }
+                    }
+                }
+            }
+        } else if (backwardTurns.contains(movement)) {
+            if (dir.equals("E")) xCenter -= 2;
+            else if (dir.equals("N")) yCenter += 2;
+            else if (dir.equals("W")) xCenter += 2;
+            else if (dir.equals("S")) yCenter -= 2;
+
+            for (int x = xCenter - 1; x <= xCenter + 1; x++) {
+                for (int y = yCenter - 1; y <= yCenter + 1; y++) {
+                    // contains an obstacle
+                    for (Obstacle obs : obstacles) {
+                        if (obs.cell.col == x && obs.cell.row == y) {
+                            System.out.println("[isValidMove] Contains obstacle");
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * Turn Robot left
      * @param dir current direction of the robot
@@ -162,8 +228,7 @@ public class Robot {
         }else if((movement == "F" && dir == "E")||(movement == "B" && dir == "W")){
             yCenter +=1;
         }
-        robotDir = dir;
-        setRobot(yCenter,xCenter,robotDir,obstacles);
+        setRobot(yCenter,xCenter,dir,obstacles);
 
     }
 
@@ -175,30 +240,30 @@ public class Robot {
     private static void turnLeft(String dir,ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
+        String nextDir = dir;
         switch (dir){
             case"N":
                 xCenter -=numGrids;
                 yCenter -=numGrids;
-                robotDir = "W";
+                nextDir = "W";
                 break;
             case"S":
                 xCenter +=numGrids;
                 yCenter +=numGrids;
-                robotDir = "E";
+                nextDir = "E";
                 break;
             case"E":
                 xCenter -=numGrids;
                 yCenter +=numGrids;
-                robotDir = "N";
+                nextDir = "N";
                 break;
             case"W":
                 xCenter +=numGrids;
                 yCenter -=numGrids;
-                robotDir = "S";
+                nextDir = "S";
                 break;
-
         }
-        setRobot(yCenter,xCenter,robotDir,obstacles);
+        setRobot(yCenter,xCenter,nextDir,obstacles);
 
     }
     /**
@@ -209,31 +274,31 @@ public class Robot {
     private static void turnRight(String dir,ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
+        String nextDir = dir;
         switch (dir){
             case"N":
                 xCenter -=numGrids;
                 yCenter +=numGrids;
-                robotDir = "E";
+                nextDir = "E";
                 break;
             case"S":
                 xCenter +=numGrids;
                 yCenter -=numGrids;
-                robotDir = "W";
+                nextDir = "W";
                 break;
             case"E":
                 xCenter +=numGrids;
                 yCenter +=numGrids;
-                robotDir = "S";
+                nextDir = "S";
                 break;
             case"W":
                 xCenter -=numGrids;
                 yCenter -=numGrids;
-                robotDir = "N";
+                nextDir = "N";
                 break;
 
         }
-        setRobot(yCenter,xCenter,robotDir,obstacles);
-
+        setRobot(yCenter, xCenter, nextDir,obstacles);
     }
 
     /**
@@ -244,29 +309,30 @@ public class Robot {
     private static void reverseRight(String dir, ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
+        String nextDir = dir;
         switch (dir) {
             case "N":
                 xCenter += numGrids;
                 yCenter += numGrids;
-                robotDir = "W";
+                nextDir = "W";
                 break;
             case "S":
                 xCenter -= numGrids;
                 yCenter -= numGrids;
-                robotDir = "E";
+                nextDir = "E";
                 break;
             case "E":
                 xCenter += numGrids;
                 yCenter -= numGrids;
-                robotDir = "N";
+                nextDir = "N";
                 break;
             case "W":
                 xCenter -= numGrids;
                 yCenter += numGrids;
-                robotDir = "S";
+                nextDir = "S";
                 break;
         }
-        setRobot(yCenter,xCenter,robotDir,obstacles);
+        setRobot(yCenter,xCenter,nextDir,obstacles);
     }
     /**
      * Reverse Robot left
@@ -276,29 +342,30 @@ public class Robot {
     private static void reverseLeft(String dir, ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
+        String nextDir = dir;
         switch (dir) {
             case "N":
                 xCenter += numGrids;
                 yCenter -= numGrids;
-                robotDir = "E";
+                nextDir = "E";
                 break;
             case "S":
                 xCenter -= numGrids;
                 yCenter += numGrids;
-                robotDir = "W";
+                nextDir = "W";
                 break;
             case "E":
                 xCenter -= numGrids;
                 yCenter -= numGrids;
-                robotDir = "S";
+                nextDir = "S";
                 break;
             case "W":
                 xCenter += numGrids;
                 yCenter += numGrids;
-                robotDir = "N";
+                nextDir = "N";
                 break;
         }
-        setRobot(yCenter,xCenter,robotDir,obstacles);
+        setRobot(yCenter,xCenter,nextDir,obstacles);
     }
 
 }
