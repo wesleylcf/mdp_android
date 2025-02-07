@@ -94,7 +94,7 @@ public class ArenaView extends View {
         obstacleNumPaint = new Paint();
         obstacleNumPaint.setColor(getResources().getColor(R.color.white));
         obstacleHeadPaint = new Paint();
-        obstacleHeadPaint.setColor(getResources().getColor(R.color.primary_400));
+        obstacleHeadPaint.setColor(getResources().getColor(R.color.red_500));
         exploredObstaclePaint = new Paint();
         exploredObstaclePaint.setColor(getResources().getColor(R.color.green_500));
         gridNumberPaint = new Paint();
@@ -152,7 +152,7 @@ public class ArenaView extends View {
 
         //draw grid numbers
         for (int i=0; i<COLS; i++){
-            plotSquare(canvas,0,i, wallPaint, gridNumberPaint, String.valueOf(i)); //for row numbering
+            plotSquare(canvas,0,i, wallPaint, gridNumberPaint, String.valueOf(19-i)); //for row numbering
             plotSquare(canvas,i+1,COLS, wallPaint, gridNumberPaint, String.valueOf(i)); //for column numbering
         }
 
