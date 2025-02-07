@@ -24,6 +24,10 @@ public class Robot {
         robotMatrix[1][1] = null;
         grid = cells;
     }
+
+    public static void printState() {
+        System.out.println(String.format("DIRECTION=%s", robotDir));
+    }
     public static boolean setRobot(int xCenter, int yCenter,  String dir, ArrayList<Obstacle> obstacles){
         boolean obsFlag = checkObs(xCenter,yCenter,obstacles);
         if(!obsFlag){

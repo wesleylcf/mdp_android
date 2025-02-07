@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
@@ -359,7 +360,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         unregisterReceiver(btLostReceiver);
         timerHandler.removeCallbacks(timerRunnable);
     }
-
 
     //Tab-bar
     private class MainAdapter extends FragmentPagerAdapter {
