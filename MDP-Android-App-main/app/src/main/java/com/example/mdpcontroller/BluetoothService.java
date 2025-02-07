@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
@@ -35,6 +36,8 @@ public class BluetoothService {
     public static BluetoothAdapter mBluetoothAdapter;
     public static BluetoothSocket mBluetoothSocket;
     public static BluetoothDevice mConnectedDevice;
+
+    public static BluetoothManager manager;
     public static boolean CONNECT_AS_CLIENT = true; // if false, will make device discoverable and accept connections
     public static Cell[][] cells;
     public static ArrayList<Obstacle> obstacles = null;
@@ -46,6 +49,8 @@ public class BluetoothService {
     private static  final String[] permissions = {
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
@@ -55,7 +60,7 @@ public class BluetoothService {
     public static ConnectedThread mConnectedThread;
     public AcceptThread mAcceptThread;
     public ConnectAsClientThread mClientThread;
-    public Activity mContext;
+    public static Activity mContext;
 
 
 
@@ -73,7 +78,6 @@ public class BluetoothService {
     public static BluetoothStatus getBtStatus(){
         return btStatus;
     }
-
     private static boolean hasPermissions(Activity activity) {
         if (permissions != null) {
             for (String permission : permissions) {
@@ -84,7 +88,6 @@ public class BluetoothService {
         }
         return true;
     }
-
     public static void stopSearch() {
         mBluetoothAdapter.cancelDiscovery();
     }
@@ -94,13 +97,15 @@ public class BluetoothService {
     }
 
     public static void initialize(Activity activity){
-        if (btStatus == null) setBtStatus(BluetoothStatus.UNCONNECTED, new HashMap<String, String>(), activity);
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
         // Request permissions
         if (!hasPermissions(activity)) {
             ActivityCompat.requestPermissions(activity, permissions, 1);
         }
+
+        if (btStatus == null) setBtStatus(BluetoothStatus.UNCONNECTED, new HashMap<String, String>(), activity);
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        manager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = manager.getAdapter();
 
         // Request to turn on bluetooth
         if(!mBluetoothAdapter.isEnabled())
@@ -213,47 +218,52 @@ public class BluetoothService {
         @Override
         public void run() {
             System.out.println("starts");
-            boolean fail = false;
+            int retries = 0;
             BluetoothService.stopSearch();
             BluetoothDevice device = BluetoothService.mBluetoothAdapter.getRemoteDevice(address);
+            BluetoothService.mBluetoothSocket = null;
 
-            try {
-                BluetoothService.mBluetoothSocket = createBluetoothSocket(device);
-            } catch (IOException e) {
-                fail = true;
+            while ((BluetoothService.mBluetoothSocket == null || !BluetoothService.mBluetoothSocket.isConnected()) && retries < 3) {
                 Intent intent = new Intent("message_received");
-                intent.putExtra("message", "DEBUG/Socket creation failed");
+                intent.putExtra("message", String.format("DEBUG/Retry(%d) for connecting as bluetooth client", retries));
                 context.sendBroadcast(intent);
-            }
-            // Establish the Bluetooth socket connection.
-            try {
-                BluetoothService.mBluetoothSocket.connect();
-                BluetoothService.mConnectedDevice = device;
-            } catch (IOException e) {
                 try {
-                    fail = true;
-                    System.out.println(e.getMessage());
-                    BluetoothService.mBluetoothSocket.close();
-                } catch (IOException e2) {
-                    Intent intent = new Intent("message_received");
+                    BluetoothService.mBluetoothSocket = createBluetoothSocket(device);
+                } catch (IOException e) {
+                    intent = new Intent("message_received");
                     intent.putExtra("message", "DEBUG/Socket creation failed");
                     context.sendBroadcast(intent);
+                    retries++;
+                    continue;
                 }
-            }
-            System.out.println("ends");
-            if(!fail) {
-                Intent intent = new Intent("message_received");
-                intent.putExtra("message", "DEBUG/Connected!");
+                // Establish the Bluetooth socket connection.
+                try {
+                    BluetoothService.mBluetoothSocket.connect();
+                    BluetoothService.mConnectedDevice = device;
+                } catch (IOException e) {
+                    try {
+                        System.out.println(e.getMessage());
+                        BluetoothService.mBluetoothSocket.close();
+                        BluetoothService.mBluetoothSocket = null;
+                    } catch (IOException e2) {
+                        intent = new Intent("message_received");
+                        intent.putExtra("message", "DEBUG/Socket creation failed while connecting");
+                        context.sendBroadcast(intent);
+                    }
+                    intent.putExtra("message", "DEBUG/Connection Failed");
+                    context.sendBroadcast(intent);
+                    Map<String, String> extra = new HashMap<>();
+                    BluetoothService.setBtStatus(BluetoothStatus.UNCONNECTED, extra, context);
+                    retries++;
+                    continue;
+                }
+                intent = new Intent("message_received");
+                intent.putExtra("message", String.format("DEBUG/Connected. Device: %s(%s)", device.getName(), device.getAddress()));
                 context.sendBroadcast(intent);
                 Map<String, String> extra = new HashMap<>();
                 extra.put("device", !name.equals("null") ? name : address);
                 BluetoothService.setBtStatus(BluetoothService.BluetoothStatus.CONNECTED, extra, context);
-            } else {
-                Intent intent = new Intent("message_received");
-                intent.putExtra("message", "DEBUG/Connection Failed");
-                context.sendBroadcast(intent);
-                Map<String, String> extra = new HashMap<>();
-                BluetoothService.setBtStatus(BluetoothStatus.UNCONNECTED, extra, context);
+                break;
             }
         }
     }
@@ -405,25 +415,10 @@ public class BluetoothService {
             if (getBtStatus() == BluetoothStatus.DISCONNECTED) {
                 Intent intent2 = new Intent("message_received");
                 if (CONNECT_AS_CLIENT){
-                    intent2.putExtra("message", "DEBUG/Connection lost, attempting to reconnect...");
+                    intent2.putExtra("message", String.format("DEBUG/Connection lost, attempting to reconnect (%s, %s)", mConnectedDevice.getName(), mConnectedDevice.getAddress()));
                     context.sendBroadcast(intent2);
                     if(getBtStatus() == BluetoothStatus.DISCONNECTED && mConnectedDevice != null) {
-                        for (int i = 0; i < MAX_RECONNECT_RETRIES; i++) {
-                            if (btStatus == BluetoothStatus.CONNECTED) return;
-                            try {
-                                clientConnect(mConnectedDevice.getAddress(), mConnectedDevice.getName(), main);
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
-                            try {
-                                intent2 = new Intent("message_received");
-                                intent2.putExtra("message", "DEBUG/Reconnect attempt " + i + " failed");
-                                context.sendBroadcast(intent2);
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                System.out.println(e.getMessage());
-                            }
-                        }
+                        clientConnect(mConnectedDevice.getAddress(), mConnectedDevice.getName(), main);
                     }
                     // Max tries elapsed
                     intent2 = new Intent("message_received");

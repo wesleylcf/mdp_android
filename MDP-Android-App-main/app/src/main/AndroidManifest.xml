@@ -3,9 +3,14 @@
     package="com.example.mdpcontroller">
 
     <uses-feature android:name="android.hardware.bluetooth" android:required="true"/>
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- Required for Android 12+ -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -22,7 +27,7 @@
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustNothing"
             android:theme="@style/DeviceList" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
