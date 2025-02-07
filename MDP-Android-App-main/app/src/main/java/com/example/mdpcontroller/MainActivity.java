@@ -570,7 +570,10 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     // Robot position
                     if (Robot.robotMatrix[1][1] != null) {
                         Cell center = Robot.robotMatrix[1][1];
-                        cmd.append(String.format(Locale.getDefault(),"/(R,%02d,%02d,0)", center.col, center.row));
+                        cmd.append(String.format(Locale.getDefault(),"/(R,%02d,%02d,0)", center.col, 19-center.row));
+                        if (DEBUG) {
+                            displayMessage(String.format("Robot coordinates: (%d, %d)", center.col, 19-center.row));
+                        }
                     }
                     else cmd.append("/(R,01,01,0)");
 
@@ -584,7 +587,10 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         }
                         curCell = arena.obstacles.get(i).cell;
                         xCoord = curCell.col;
-                        yCoord = curCell.row; // invert y coordinates since algorithm uses bottom left as origin
+                        yCoord = 19-curCell.row; // invert y coordinates since algorithm uses bottom left as origin
+                        if (DEBUG) {
+                            displayMessage(String.format("Obstacle(%sd) coordinates: (%d, %d)", i, xCoord, yCoord));
+                        }
                         cmd.append(String.format(Locale.getDefault(), "/(%02d,%02d,%02d,%s)", i, xCoord, yCoord, dir));
                         timerRunnable.startTime = 0;
                     }
