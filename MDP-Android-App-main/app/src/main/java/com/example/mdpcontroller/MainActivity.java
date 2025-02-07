@@ -580,16 +580,16 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     // Obstacle position
                     for (int i = 0; i < arena.obstacles.size(); i++) {
                         switch(arena.obstacles.get(i).imageDir){
-                            case("TOP"): dir = "90"; break;
-                            case("LEFT"): dir = "180"; break;
                             case("RIGHT"): dir = "0"; break;
-                            case("BOTTOM"): dir = "-90"; break;
+                            case("TOP"): dir = "1"; break;
+                            case("LEFT"): dir = "2"; break;
+                            case("BOTTOM"): dir = "3"; break;
                         }
                         curCell = arena.obstacles.get(i).cell;
                         xCoord = curCell.col;
                         yCoord = 19-curCell.row; // invert y coordinates since algorithm uses bottom left as origin
                         if (DEBUG) {
-                            displayMessage(String.format("Obstacle(%sd) coordinates: (%d, %d)", i, xCoord, yCoord));
+                            displayMessage(String.format("Obstacle(%d) coordinates: (%d, %d) with direction enum %s", i, xCoord, yCoord, dir));
                         }
                         cmd.append(String.format(Locale.getDefault(), "/(%02d,%02d,%02d,%s)", i, xCoord, yCoord, dir));
                         timerRunnable.startTime = 0;
@@ -609,6 +609,9 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                 toggleActivateButtons(false);
             }
         } catch (Exception e) {
+            if (DEBUG) {
+                displayMessage(e.getMessage());
+            }
             System.out.println(e.getMessage());
         }
     }
