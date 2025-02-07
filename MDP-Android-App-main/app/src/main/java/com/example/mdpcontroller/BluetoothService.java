@@ -17,6 +17,7 @@ import android.location.LocationManager;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
@@ -60,7 +61,7 @@ public class BluetoothService {
     public static ConnectedThread mConnectedThread;
     public AcceptThread mAcceptThread;
     public ConnectAsClientThread mClientThread;
-    public static Activity mContext;
+    public static MainActivity mContext;
 
 
 
@@ -135,7 +136,7 @@ public class BluetoothService {
         }
     }
 
-    public BluetoothService(Activity context){
+    public BluetoothService(MainActivity context){
         mContext = context;
     }
 
@@ -146,7 +147,13 @@ public class BluetoothService {
 
     public boolean write(String message, boolean DEBUG){
         if (mConnectedThread == null){
-            Toast.makeText(mContext, "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+            if (mContext.DEBUG) {
+                Intent intent = new Intent("message_received");
+                intent.putExtra("message", String.format("DEBUG/bluetooth not connected"));
+                mContext.sendBroadcast(intent);
+            } else {
+                Toast.makeText(mContext, "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+            }
             return false;
         }
         // comment out the \n below only when performing checklist
