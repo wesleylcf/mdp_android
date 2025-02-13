@@ -203,13 +203,9 @@ public class ArenaView extends View {
 
     @Override
     /*
-    * MotionEvent includes many actions like ACTION_MOVE, ACTION_DOWN, ACTION_UP
-    * It is sufficient to handle the ACTION_UP event
+    * Handles ACTION_DOWN, ACTION_MOVE, ACTION_UP events
     * */
     public boolean onTouchEvent(MotionEvent event){
-        if (event.getAction() != MotionEvent.ACTION_UP) {
-            return true;
-        }
         if (arenaIntent == ArenaIntent.UNSET && !obstacleEdit){
             scaleGrid(event);
             return true;
@@ -362,6 +358,7 @@ public class ArenaView extends View {
     }
 
     private void dragObstacle(MotionEvent event, Cell curCell, Obstacle obstacle){
+        System.out.println("dragObstacle");
         int index = obstacles.indexOf(obstacle);
         try{
             if(curCell.type.equals("")){
