@@ -78,7 +78,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     private boolean valid_target = true;
     private boolean valid_image = true;
 
-    public String robotDir;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         BluetoothService.initialize(this);
@@ -121,7 +120,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                 }
             }
         });
-        robotDir = "N";
 
         moveList = new ArrayList<>();
         setConnectBtn();
@@ -443,9 +441,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             System.out.println("Robot is not set up on map");
         }else{
             btService.write(String.format("MOVE/%s", dir), DEBUG);
-            if(robotDir != null){ //just to catch error
-                robotDir = arena.moveRobot(robotDir,dir);
-            }
+            arena.moveRobot(dir);
         }
     }
 

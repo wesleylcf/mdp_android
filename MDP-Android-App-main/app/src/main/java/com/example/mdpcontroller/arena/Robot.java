@@ -37,6 +37,7 @@ public class Robot {
 
         setRobotPosition(xCenter, yCenter);
         setRobotDirection(dir);
+        System.out.println(String.format("[Robot.setRobot] New x: %d, New y:%d, new dir:%s", robotMatrix[1][1].col, robotMatrix[1][1].row, robotDir));
         return true;
     }
     /**
@@ -132,31 +133,30 @@ public class Robot {
 
     /**
      * All the robot movement
-     * @param dir current direction of the robot
      * @param movement direction of robot movement
      * @param obstacles list of current obstacles
      */
-    public static void moveRobot(String dir,String movement,ArrayList<Obstacle> obstacles){
-        if (!isValidMove(dir, movement, obstacles)) {
+    public static void moveRobot(String movement,ArrayList<Obstacle> obstacles){
+        if (!isValidMove(movement, obstacles)) {
             return;
         }
 
         switch(movement){
             case("F"):
             case("B"):
-                forwardBackwardMove(dir,movement,obstacles);
+                forwardBackwardMove(movement, obstacles);
                 break;
             case("L"):
-                turnLeft(dir,obstacles);
+                turnLeft(obstacles);
                 break;
             case("BL"):
-                reverseLeft(dir,obstacles);
+                reverseLeft(obstacles);
                 break;
             case("R"):
-                turnRight(dir,obstacles);
+                turnRight(obstacles);
                 break;
             case("BR"):
-                reverseRight(dir,obstacles);
+                reverseRight(obstacles);
                 break;
         }
         return;
@@ -167,15 +167,15 @@ public class Robot {
     * The intuition is that to get to a diagonal cell, we need to first move to the adjacent cell.
     * For example from (0,0) if we turn right, we go to (0,1) first then (1,1)
     * */
-    public static boolean isValidMove(String dir, String movement, ArrayList<Obstacle> obstacles) {
+    public static boolean isValidMove(String movement, ArrayList<Obstacle> obstacles) {
         ArrayList<String> forwardTurns = new ArrayList<>(Arrays.asList("L", "R"));
         ArrayList<String> backwardTurns = new ArrayList<>(Arrays.asList("BL", "BR"));
         int xCenter = robotMatrix[1][1].col, yCenter = robotMatrix[1][1].row;
         if (forwardTurns.contains(movement)) {
-            if (dir.equals("E")) xCenter += 3;
-            else if (dir.equals("N")) yCenter -= 3;
-            else if (dir.equals("W")) xCenter -= 3;
-            else if (dir.equals("S")) yCenter += 3;
+            if (robotDir.equals("E")) xCenter += 3;
+            else if (robotDir.equals("N")) yCenter -= 3;
+            else if (robotDir.equals("W")) xCenter -= 3;
+            else if (robotDir.equals("S")) yCenter += 3;
 
             for (int x = xCenter - 1; x <= xCenter + 1; x++) {
                 for (int y = yCenter - 1; y <= yCenter + 1; y++) {
@@ -189,10 +189,10 @@ public class Robot {
                 }
             }
         } else if (backwardTurns.contains(movement)) {
-            if (dir.equals("E")) xCenter -= 3;
-            else if (dir.equals("N")) yCenter += 3;
-            else if (dir.equals("W")) xCenter += 3;
-            else if (dir.equals("S")) yCenter -= 3;
+            if (robotDir.equals("E")) xCenter -= 3;
+            else if (robotDir.equals("N")) yCenter += 3;
+            else if (robotDir.equals("W")) xCenter += 3;
+            else if (robotDir.equals("S")) yCenter -= 3;
 
             for (int x = xCenter - 1; x <= xCenter + 1; x++) {
                 for (int y = yCenter - 1; y <= yCenter + 1; y++) {
@@ -211,37 +211,35 @@ public class Robot {
 
     /**
      * Turn Robot left
-     * @param dir current direction of the robot
      * @param movement direction of robot movement
      * @param obstacles list of current obstacles
      */
-    private static void forwardBackwardMove(String dir, String movement,ArrayList<Obstacle> obstacles){
+    private static void forwardBackwardMove(String movement,ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
-        if((movement == "F" && dir == "N")||(movement == "B" && dir == "S")){
+        if((movement == "F" && robotDir == "N")||(movement == "B" && robotDir == "S")){
             xCenter -=1;
-            setRobot(yCenter,xCenter,dir,obstacles);
-        }else if((movement == "F" && dir == "S")||(movement == "B" && dir == "N")){
+            setRobot(yCenter,xCenter,robotDir,obstacles);
+        }else if((movement == "F" && robotDir == "S")||(movement == "B" && robotDir == "N")){
             xCenter +=1;
-        }else if((movement == "F" && dir == "W")||(movement == "B" && dir == "E")){
+        }else if((movement == "F" && robotDir == "W")||(movement == "B" && robotDir == "E")){
             yCenter -=1;
-        }else if((movement == "F" && dir == "E")||(movement == "B" && dir == "W")){
+        }else if((movement == "F" && robotDir == "E")||(movement == "B" && robotDir == "W")){
             yCenter +=1;
         }
-        setRobot(yCenter,xCenter,dir,obstacles);
+        setRobot(yCenter,xCenter,robotDir,obstacles);
 
     }
 
     /**
      * Turn Robot left
-     * @param dir current direction of the robot
      * @param obstacles current list of obstacles
      */
-    private static void turnLeft(String dir,ArrayList<Obstacle> obstacles){
+    private static void turnLeft(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
-        String nextDir = dir;
-        switch (dir){
+        String nextDir = "";
+        switch (robotDir){
             case"N":
                 xCenter -=numGrids;
                 yCenter -=numGrids;
@@ -268,14 +266,13 @@ public class Robot {
     }
     /**
      * Turn Robot right
-     * @param dir current direction of the robot
      * @param obstacles current list of obstacles
      */
-    private static void turnRight(String dir,ArrayList<Obstacle> obstacles){
+    private static void turnRight(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
-        String nextDir = dir;
-        switch (dir){
+        String nextDir = "";
+        switch (robotDir){
             case"N":
                 xCenter -=numGrids;
                 yCenter +=numGrids;
@@ -303,14 +300,13 @@ public class Robot {
 
     /**
      * Reverse Robot right
-     * @param dir current direction of the robot
      * @param obstacles current list of obstacles
      */
-    private static void reverseRight(String dir, ArrayList<Obstacle> obstacles){
+    private static void reverseRight(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
-        String nextDir = dir;
-        switch (dir) {
+        String nextDir = "";
+        switch (robotDir) {
             case "N":
                 xCenter += numGrids;
                 yCenter += numGrids;
@@ -336,14 +332,13 @@ public class Robot {
     }
     /**
      * Reverse Robot left
-     * @param dir current direction of the robot
      * @param obstacles current list of obstacles
      */
-    private static void reverseLeft(String dir, ArrayList<Obstacle> obstacles){
+    private static void reverseLeft(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
-        String nextDir = dir;
-        switch (dir) {
+        String nextDir = "";
+        switch (robotDir) {
             case "N":
                 xCenter += numGrids;
                 yCenter -= numGrids;

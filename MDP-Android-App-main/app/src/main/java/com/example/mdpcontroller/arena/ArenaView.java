@@ -202,7 +202,14 @@ public class ArenaView extends View {
     }
 
     @Override
+    /*
+    * MotionEvent includes many actions like ACTION_MOVE, ACTION_DOWN, ACTION_UP
+    * It is sufficient to handle the ACTION_UP event
+    * */
     public boolean onTouchEvent(MotionEvent event){
+        if (event.getAction() != MotionEvent.ACTION_UP) {
+            return true;
+        }
         if (arenaIntent == ArenaIntent.UNSET && !obstacleEdit){
             scaleGrid(event);
             return true;
@@ -292,10 +299,12 @@ public class ArenaView extends View {
 
 
         }
+        System.out.println(String.format("Final Direction: %s", Robot.robotDir));
         return true;
     }
 
     private void scaleGrid(MotionEvent event){
+        System.out.println("scaleGrid");
         isEditMap = false;
         float x = event.getX();
         float y = event.getY();
@@ -456,7 +465,8 @@ public class ArenaView extends View {
         }
     }
 
-    public Boolean setRobot(int xCenter, int yCenter,  String dir){
+    public Boolean setRobot(int xCenter, int yCenter, String dir){
+        System.out.println(String.format("Arena.setRobot: x:%d, y:%d, dir:%s", xCenter, yCenter, dir));
         if(yCenter<1 || yCenter>=ROWS-1 || xCenter>=COLS-1 || xCenter<1){
             System.out.println("Out of bounds: Robot need nine cells");
             return false;
@@ -466,8 +476,8 @@ public class ArenaView extends View {
             return success;
         }
     }
-    public String moveRobot(String dir,String movement){
-        Robot.moveRobot(dir,movement,obstacles);
+    public String moveRobot(String nextDir){
+        Robot.moveRobot(nextDir, obstacles);
         invalidate();
         return Robot.robotDir;
     }
