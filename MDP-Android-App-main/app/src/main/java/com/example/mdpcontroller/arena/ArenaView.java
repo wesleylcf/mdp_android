@@ -230,6 +230,7 @@ public class ArenaView extends View {
                 if (curRect.contains(x , y )) {
                     System.out.println(x + " : " + y + " : " + rectX + " : " + rectY + " : " + hMargin + " : " + vMargin + " : " + cellSize);
                     System.out.println("Coordinates: (" + curCell.col + "," + curCell.row + ")");
+                    System.out.println(String.format("Direction: %s", Robot.robotDir));
                     if(isEditMap){
                         if(arenaIntent == ArenaIntent.SETTING_OBSTACLES){
                             if(!obstacleSelected){

@@ -75,8 +75,8 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 
     private boolean MOVING=false;
     private boolean valid_pos;
-    private boolean valid_target;
-    private boolean valid_image;
+    private boolean valid_target = true;
+    private boolean valid_image = true;
 
     public String robotDir;
     @Override
@@ -277,6 +277,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     }
                 } catch (Exception e) {
                     // message incorrect message parameters
+                    System.out.println(e.getStackTrace());
                     displayMessage("ERROR (" + e.getMessage() + ")\n" + fullMessage);
                 }
             }
