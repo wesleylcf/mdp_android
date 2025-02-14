@@ -52,6 +52,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Locale;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity<ActivityResultLauncher> extends AppCompatActivity implements ObstacleDialogueFragment.DialogDataListener {
     private final String DELIMITER = "/";
     public boolean DEBUG = false;
@@ -410,29 +414,39 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     public void moveBtn(View view){
         ImageButton pressedBtn = (ImageButton) view;
         String dir;
+        String rpiDir;
+        String distanceOrAngle = "090";
         switch (pressedBtn.getId()){
             case(R.id.fButton): {
                 dir = "F";
+                rpiDir = "FW";
+                distanceOrAngle = "050";
                 break;
             }
             case(R.id.rButton): {
                 dir = "R";
+                rpiDir = "FR";
                 break;
             }
             case(R.id.lButton): {
                 dir = "L";
+                rpiDir = "FL";
                 break;
             }
             case(R.id.bButton): {
                 dir = "B";
+                rpiDir = "BW";
+                distanceOrAngle = "050";
                 break;
             }
             case(R.id.brButton): {
                 dir = "BR";
+                rpiDir = "BR";
                 break;
             }
             case(R.id.blButton): {
                 dir = "BL";
+                rpiDir = "BL";
                 break;
             }
             default: return;
@@ -440,8 +454,17 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         if(Robot.robotMatrix[0][0] == null){
             System.out.println("Robot is not set up on map");
         }else{
-            btService.write(String.format("MOVE/%s", dir), DEBUG);
-            arena.moveRobot(dir);
+//            btService.write(String.format("MOVE/%s", dir), DEBUG);
+            try {
+                JSONObject arenaInfo = new JSONObject();
+                arenaInfo.put("cat", "manual");
+                arenaInfo.put("value", rpiDir + distanceOrAngle);
+                btService.write(arenaInfo.toString(), DEBUG);
+                arena.moveRobot(dir);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 
