@@ -512,6 +512,33 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         logs.setText(null);
     }
 
+    public void sendArenaInfo(View view) {
+        System.out.println("sendArenaInfo");
+        try {
+            JSONObject arenaInfo = new JSONObject();
+            arenaInfo.put("cat", "obstacles");
+
+            JSONObject valueObject = new JSONObject();
+            JSONArray obstaclesArray = new JSONArray();
+
+            JSONObject obstacle = new JSONObject();
+            obstacle.put("x", 15);
+            obstacle.put("y", 15);
+            obstacle.put("id", 1);
+            obstacle.put("d", 2);
+
+            obstaclesArray.put(obstacle);
+            valueObject.put("obstacles", obstaclesArray);
+
+            arenaInfo.put("value", valueObject);
+
+            String jsonString = arenaInfo.toString();
+            btService.write(jsonString, false);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void onClickSimulatorBtn(View view){
         moveList.clear();
         //reset obstacles
@@ -551,6 +578,19 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         btService.write(cmd.toString(), DEBUG);
         TextView rbTV = findViewById(R.id.obstacleStatusTextView);
         rbTV.setText(R.string.check_path);
+    }
+
+    public void startExplore(View view) {
+        System.out.println("startExplore");
+        try {
+            JSONObject json = new JSONObject();
+            json.put("cat", "control");
+            json.put("value", "start");
+            btService.write(json.toString(), DEBUG);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void startStopTimer(View view){
