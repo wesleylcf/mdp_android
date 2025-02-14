@@ -236,7 +236,7 @@ public class BluetoothService {
                 context.sendBroadcast(intent);
                 try {
                     BluetoothService.mBluetoothSocket = createBluetoothSocket(device);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     intent = new Intent("message_received");
                     intent.putExtra("message", "DEBUG/Socket creation failed");
                     context.sendBroadcast(intent);
@@ -245,20 +245,32 @@ public class BluetoothService {
                 }
                 // Establish the Bluetooth socket connection.
                 try {
-                    BluetoothService.mBluetoothSocket.connect();
-                    BluetoothService.mConnectedDevice = device;
-                } catch (IOException e) {
+                    if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        System.out.println("Missing BLUETOOTH_CONNECT permission");
+                        ActivityCompat.requestPermissions(mContext, permissions, 1);
+                    }
                     try {
-                        System.out.println(e.getMessage());
+                        BluetoothService.mBluetoothSocket.connect();
+                    } catch (IOException e) {
+                        System.out.println("Standard connect() failed, trying fallback...");
+                        BluetoothService.mBluetoothSocket = (BluetoothSocket) device.getClass()
+                                .getMethod("createRfcommSocket", int.class)
+                                .invoke(device, 1);
+                        BluetoothService.mBluetoothSocket.connect();
+                    }
+                    BluetoothService.mConnectedDevice = device;
+                } catch (Exception e) {
+                    intent = new Intent("message_received");
+                    intent.putExtra("message", "DEBUG/Socket creation success, connection failed with: " + e.getMessage());
+                    context.sendBroadcast(intent);
+                    try {
                         BluetoothService.mBluetoothSocket.close();
                         BluetoothService.mBluetoothSocket = null;
-                    } catch (IOException e2) {
+                    } catch (Exception e2) {
                         intent = new Intent("message_received");
-                        intent.putExtra("message", "DEBUG/Socket creation failed while connecting");
+                        intent.putExtra("message", "DEBUG/Socket creation success, connection failed, socket close failure: " + e.getMessage());
                         context.sendBroadcast(intent);
                     }
-                    intent.putExtra("message", "DEBUG/Connection Failed");
-                    context.sendBroadcast(intent);
                     Map<String, String> extra = new HashMap<>();
                     BluetoothService.setBtStatus(BluetoothStatus.UNCONNECTED, extra, context);
                     retries++;

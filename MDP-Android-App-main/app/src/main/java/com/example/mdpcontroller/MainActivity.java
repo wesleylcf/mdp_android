@@ -259,7 +259,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                             // Check if coordinates are valid
                             // If valid, update robot position text view and the arena GUI
                             // Otherwise, do not update anything, display the invalid error message
-                            valid_pos = arena.setRobot(xCoord, yCoord, orient);
+                            valid_pos = arena.setRobot(xCoord, 19-yCoord, orient);
                             if (valid_pos) {
                                 robotPosTextView.setText(combined);
                             } else {
