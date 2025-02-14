@@ -236,7 +236,7 @@ public class BluetoothService {
                 context.sendBroadcast(intent);
                 try {
                     BluetoothService.mBluetoothSocket = createBluetoothSocket(device);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     intent = new Intent("message_received");
                     intent.putExtra("message", "DEBUG/Socket creation failed");
                     context.sendBroadcast(intent);
@@ -249,7 +249,15 @@ public class BluetoothService {
                         System.out.println("Missing BLUETOOTH_CONNECT permission");
                         ActivityCompat.requestPermissions(mContext, permissions, 1);
                     }
-                    BluetoothService.mBluetoothSocket.connect();
+                    try {
+                        BluetoothService.mBluetoothSocket.connect();
+                    } catch (IOException e) {
+                        System.out.println("Standard connect() failed, trying fallback...");
+                        BluetoothService.mBluetoothSocket = (BluetoothSocket) device.getClass()
+                                .getMethod("createRfcommSocket", int.class)
+                                .invoke(device, 1);
+                        BluetoothService.mBluetoothSocket.connect();
+                    }
                     BluetoothService.mConnectedDevice = device;
                 } catch (Exception e) {
                     intent = new Intent("message_received");
