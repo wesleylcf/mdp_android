@@ -248,17 +248,17 @@ public class BluetoothService {
                     BluetoothService.mBluetoothSocket.connect();
                     BluetoothService.mConnectedDevice = device;
                 } catch (IOException e) {
+                    intent = new Intent("message_received");
+                    intent.putExtra("message", "DEBUG/Socket creation success, connection failed with: " + e.getMessage());
+                    context.sendBroadcast(intent);
                     try {
-                        System.out.println(e.getMessage());
                         BluetoothService.mBluetoothSocket.close();
                         BluetoothService.mBluetoothSocket = null;
                     } catch (IOException e2) {
                         intent = new Intent("message_received");
-                        intent.putExtra("message", "DEBUG/Socket creation failed while connecting");
+                        intent.putExtra("message", "DEBUG/Socket creation success, connection failed, socket close failure: " + e.getMessage());
                         context.sendBroadcast(intent);
                     }
-                    intent.putExtra("message", "DEBUG/Connection Failed");
-                    context.sendBroadcast(intent);
                     Map<String, String> extra = new HashMap<>();
                     BluetoothService.setBtStatus(BluetoothStatus.UNCONNECTED, extra, context);
                     retries++;
