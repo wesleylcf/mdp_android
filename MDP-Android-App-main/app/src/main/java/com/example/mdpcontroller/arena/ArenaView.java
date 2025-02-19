@@ -232,7 +232,7 @@ public class ArenaView extends View {
                 float rectY = curRect.centerY();
                 if (curRect.contains(x , y )) {
                     System.out.println(x + " : " + y + " : " + rectX + " : " + rectY + " : " + hMargin + " : " + vMargin + " : " + cellSize);
-                    System.out.println("Coordinates: (" + curCell.col + "," + curCell.row + ")");
+                    System.out.println("Coordinates: (" + curCell.col + "," + (19 - curCell.row) + ")");
                     System.out.println(String.format("Direction: %s", Robot.robotDir));
                     if(isEditMap){
                         if(arenaIntent == ArenaIntent.SETTING_OBSTACLES){
@@ -241,7 +241,7 @@ public class ArenaView extends View {
                                     curCell.type = "obstacle";
                                     obstacles.add(new Obstacle(curCell));
                                     invalidate();
-                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, curCell.row, obstacles.get(obstacles.size() - 1).imageDir), false);
+                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), obstacles.get(obstacles.size() - 1).imageDir), false);
                                     break;
                                 } else if (curCell.type == "obstacle"){
                                     for(Obstacle obstacle: obstacles){

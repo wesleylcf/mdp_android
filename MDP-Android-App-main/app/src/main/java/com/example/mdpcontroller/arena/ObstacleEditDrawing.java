@@ -58,11 +58,9 @@ public class ObstacleEditDrawing extends View{
         obstacleNumPaint.setTextSize(90);
         //Rect bounds = new Rect();
         int xPos = (canvas.getWidth() / 2);
-        int yPos = (int) ((canvas.getHeight() / 2)- ((obstacleNumPaint.descent() + obstacleNumPaint.ascent()) / 2)) ;
+        int yPos = (int) ((canvas.getHeight() / 2) - ((obstacleNumPaint.descent() + obstacleNumPaint.ascent()) / 2)) ;
         //((textPaint.descent() + textPaint.ascent()) / 2) is the distance from the baseline to the center.
-        //System.out.println(imageID);
-        canvas.drawText(Integer.toString(imageID), xPos, yPos, obstacleNumPaint);
-
+        canvas.drawText(Integer.toString(imageID), xPos, 19 - yPos, obstacleNumPaint);
     }
 
 }

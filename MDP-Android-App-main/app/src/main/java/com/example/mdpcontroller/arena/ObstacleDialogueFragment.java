@@ -79,7 +79,7 @@ public class ObstacleDialogueFragment extends android.app.DialogFragment{
 //        xPos.setText(obstacleView.x.toString());
         yPos = view.findViewById(R.id.yPos);
         obstacleView.y = getArguments().getInt("OBSY");
-        Integer convertedY = obstacleView.y;
+        Integer convertedY = 19 - obstacleView.y;
         Integer convertedX = obstacleView.x;
 //        yPos.setText(obstacleView.y.toString());
         xPos.setText(convertedX.toString());
@@ -131,31 +131,26 @@ public class ObstacleDialogueFragment extends android.app.DialogFragment{
             }
         });
         yPos.addTextChangedListener(new TextWatcher() {
-
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length() != 0)
-                    obstacleView.y = Integer.parseInt(s.toString());
-                    obstacleView.y = obstacleView.y;
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-                if(s.length() != 0){
-                    obstacleView.y = Integer.parseInt(s.toString());
-                    obstacleView.y = obstacleView.y;
+                if (s.length() != 0) {
+                    obstacleView.y = Integer.parseInt(s.toString()); // convert input string to int
+                    obstacleView.y = 19 - obstacleView.y; // update y to 19 - y
                 }
+            }
 
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0) {
+                    obstacleView.y = Integer.parseInt(s.toString()); // convert input string to int
+                    obstacleView.y = 19 - obstacleView.y; // update y to 19 - y
+                }
             }
         });
-
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +159,7 @@ public class ObstacleDialogueFragment extends android.app.DialogFragment{
                 getDialog().dismiss();
             }
         });
+
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
