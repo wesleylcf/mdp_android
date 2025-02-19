@@ -63,7 +63,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     private BluetoothService btService;
     private BluetoothService.BluetoothLostReceiver btLostReceiver;
     private BtStatusChangedReceiver conReceiver;
-
     private AppDataModel appDataModel;
     private ArenaView arena;
     private List<String> moveList;
@@ -75,7 +74,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     TabLayout tabLayout;
     ViewPager tabViewPager;
     MainAdapter adapter;
-
 
     private boolean MOVING=false;
     private boolean valid_pos;
@@ -93,7 +91,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         arena = findViewById(R.id.arena);
         arena.getBluetoothService(btService);
 
-        //Tab-Layout
+        // Tab-Layout
         tabLayout = findViewById(R.id.tabLayout);
         tabViewPager = findViewById(R.id.tabViewPager);
         adapter = new MainAdapter(getSupportFragmentManager());
@@ -140,7 +138,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         registerReceiver(btLostReceiver, new IntentFilter("bt_status_changed"));
     }
 
-    //BlueTooth
+    // BlueTooth
     public void btConnect_onPress(View view) {
         // connect as server
         if (!BluetoothService.CONNECT_AS_CLIENT && !(BluetoothService.getBtStatus() == BluetoothService.BluetoothStatus.CONNECTED)) {
@@ -298,8 +296,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         ((TextView)findViewById(R.id.btMessageTextView)).append(msg);
     }
 
-
-
     // Create a BroadcastReceiver for bt_status_changed.
     public class BtStatusChangedReceiver extends BroadcastReceiver {
         Activity main;
@@ -365,7 +361,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         timerHandler.removeCallbacks(timerRunnable);
     }
 
-    //Tab-bar
+    // Tab-bar
     private class MainAdapter extends FragmentPagerAdapter {
         ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
         ArrayList<String> stringArrayList = new ArrayList<>();
@@ -409,6 +405,11 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         // Collapse Keyboard on click
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+    }
+
+    public void clearChatBtn(View view) {
+        EditText chatET = (EditText) findViewById(R.id.chatEditText);
+        chatET.setText("");
     }
 
     public void moveBtn(View view){
@@ -590,7 +591,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public void startStopTimer(View view){
@@ -721,6 +721,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         obstacleDialogueFragment.show(getFragmentManager(),"hello");
         obstacleDialogueFragment.setCancelable(false);
     }
+
     @Override
     public void dialogData(int obsIndex, String imageDir, int x, int y) {
         Cell curCell;
@@ -747,10 +748,12 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         }
         arena.invalidate();
     }
+
     @Override
     public void setObstacleEdit(boolean obsEdit) {
         arena.obstacleEdit = obsEdit;
     }
+
     @Override
     public void onPause(){
         super.onPause();
@@ -769,6 +772,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             obs.cell.setType("obstacle");
         }
     }
+
 
 
 }

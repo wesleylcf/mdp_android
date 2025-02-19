@@ -38,8 +38,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-    <!-- the onClick is just to check it does do something-->
-
     <Button
         android:id="@+id/sendBtn"
         android:layout_width="wrap_content"
@@ -63,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:onClick="clearLogsBtn"
+        android:onClick="clearChatBtn"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:text="Clear"
