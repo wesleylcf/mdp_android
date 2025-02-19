@@ -162,10 +162,9 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             if (DEBUG) {
                 displayMessage("Debug Mode\n" + fullMessage);
                 System.out.println("Debug Mode\n" + fullMessage);
-//                return;
             }
             if (fullMessage.length() ==0) return;
-            //Categorize received messages
+            // Categorize received messages
             if (fullMessage.charAt(0) == '&') fullMessage = fullMessage.substring(1);
             String[] commandArr = fullMessage.split("&");
             for (String message: commandArr) {
@@ -399,7 +398,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             System.out.println("Send Text = " + sendText);
             chatET.setText("");
         }
-//        displayMessage("Status update\n" + sendText);
         btService.write(String.format("%s", sendText), DEBUG);
 
         // Collapse Keyboard on click
@@ -455,7 +453,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         if(Robot.robotMatrix[0][0] == null){
             System.out.println("Robot is not set up on map");
         }else{
-//            btService.write(String.format("MOVE/%s", dir), DEBUG);
             try {
                 JSONObject arenaInfo = new JSONObject();
                 arenaInfo.put("cat", "manual");
@@ -465,7 +462,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
 
@@ -513,28 +509,51 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         logs.setText(null);
     }
 
+    /*
+     *   Function to send the obstacles coordinates to RPI
+     */
     public void sendArenaInfo(View view) {
-        System.out.println("sendArenaInfo");
         try {
             JSONObject arenaInfo = new JSONObject();
             arenaInfo.put("cat", "obstacles");
-
             JSONObject valueObject = new JSONObject();
             JSONArray obstaclesArray = new JSONArray();
+            int id = 1;
 
-            JSONObject obstacle = new JSONObject();
-            obstacle.put("x", 15);
-            obstacle.put("y", 15);
-            obstacle.put("id", 1);
-            obstacle.put("d", 2);
-
-            obstaclesArray.put(obstacle);
+            // Loop through all obstacles in ArenaView and add them to the JSON array
+            for (Obstacle obstacle : arena.obstacles) {
+                JSONObject obstacleJSON = new JSONObject();
+                obstacleJSON.put("x", obstacle.cell.col);
+                obstacleJSON.put("y", 19 - obstacle.cell.row);
+                obstacleJSON.put("id", id++);
+                int direction;
+                switch (obstacle.imageDir) {
+                    case "TOP":
+                        direction = 1;
+                        break;
+                    case "RIGHT":
+                        direction = 0;
+                        break;
+                    case "BOTTOM":
+                        direction = 3;
+                        break;
+                    case "LEFT":
+                        direction = 2;
+                        break;
+                    default:
+                        direction = -1; // Handle unexpected values
+                        break;
+                }
+                obstacleJSON.put("d", direction);
+                obstaclesArray.put(obstacleJSON);
+            }
             valueObject.put("obstacles", obstaclesArray);
-
             arenaInfo.put("value", valueObject);
 
+            // Convert JSON to string and send via Bluetooth
             String jsonString = arenaInfo.toString();
             btService.write(jsonString, false);
+            System.out.print("Obstacles sent: " + jsonString);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -542,7 +561,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 
     public void onClickSimulatorBtn(View view){
         moveList.clear();
-        //reset obstacles
+        // reset obstacles
         if(arena.obstacles.size() > 0){
             for(Obstacle obstacle: arena.obstacles){
                 obstacle.explored = false;
@@ -582,7 +601,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     }
 
     public void startExplore(View view) {
-        System.out.println("startExplore");
         try {
             JSONObject json = new JSONObject();
             json.put("cat", "control");
@@ -611,7 +629,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             } else { // start explore
                 if (b.getId() == R.id.startExplore) {
                     moveList.clear();
-                    //reset obstacles
+                    // reset obstacles
                     if(arena.obstacles.size() > 0){
                         for(Obstacle obstacle: arena.obstacles){
                             obstacle.explored = false;
@@ -619,7 +637,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         }
                         arena.invalidate();
                     }
-                    //prepare timer
+                    // prepare timer
                     timerRunnable = new TimerRunnable(findViewById(R.id.timerTextViewExplore));
                     curObsNum = "0";
                     b.setText(R.string.stop_explore);

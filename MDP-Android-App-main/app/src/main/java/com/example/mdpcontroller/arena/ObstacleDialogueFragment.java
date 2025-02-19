@@ -166,7 +166,7 @@ public class ObstacleDialogueFragment extends android.app.DialogFragment{
                 dialogDataListener.dialogData(getArguments().getInt("OBSINDEX"),imageDir.getSelectedItem().toString(), obstacleView.x, obstacleView.y);
                 dialogDataListener.setObstacleEdit(false);
                 getDialog().dismiss();
-                btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", obstacleView.x, obstacleView.y, imageDir.getSelectedItem().toString()), false);
+                btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", obstacleView.x, 19-obstacleView.y, imageDir.getSelectedItem().toString()), false);
             }
         });
 

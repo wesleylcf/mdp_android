@@ -37,9 +37,10 @@ public class Robot {
 
         setRobotPosition(xCenter, yCenter);
         setRobotDirection(dir);
-        System.out.println(String.format("[Robot.setRobot] New x: %d, New y:%d, new dir:%s", robotMatrix[1][1].col, robotMatrix[1][1].row, robotDir));
+        System.out.println(String.format("[Robot.setRobot] New x: %d, New y:%d, new dir:%s", robotMatrix[1][1].col, 19 - robotMatrix[1][1].row, robotDir));
         return true;
     }
+
     /**
      * Does NOT validate if position is valid, Robot should not know about the state of the grid
      * Perform validation before calling this method

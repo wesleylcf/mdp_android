@@ -25,7 +25,7 @@ import java.util.Map;
 
 
 public class ArenaView extends View {
-    //Zoom & Scroll
+    // Zoom & Scroll
     private static float MIN_ZOOM = 1f;
     private static float MAX_ZOOM = 5f;
     private float scaleFactor = 1.f;
@@ -44,8 +44,7 @@ public class ArenaView extends View {
     private boolean dragged;
     private BluetoothService btService;
 
-
-    //Arena
+    // Arena
     public Cell[][] cells;
     public Map<Cell, RectF> gridMap;
     public ArrayList<Obstacle> obstacles;
@@ -117,7 +116,7 @@ public class ArenaView extends View {
         }
     }
 
-    //called whenever object of the class is called
+    // Called whenever object of the class is called
     @Override
     protected  void onDraw(Canvas canvas){
         canvas.getClipBounds(clipBoundsCanvas);
@@ -131,8 +130,8 @@ public class ArenaView extends View {
         obstacleImageIDPaint.setTextSize(cellSize/2);
         obstacleNumPaint.setTextSize(cellSize/3);
         gridNumberPaint.setTextSize(cellSize/2);
-        hMargin = (width-(COLS+1)*cellSize)/2; //distance from the left border
-        vMargin = (height-(ROWS+1)*cellSize)/2; //distance from the top border
+        hMargin = (width-(COLS+1)*cellSize)/2; // distance from the left border
+        vMargin = (height-(ROWS+1)*cellSize)/2; // distance from the top border
         canvas.translate(hMargin,vMargin);
         canvas.scale(scaleFactor, scaleFactor);
 
@@ -201,10 +200,10 @@ public class ArenaView extends View {
         }
     }
 
-    @Override
     /*
-    * Handles ACTION_DOWN, ACTION_MOVE, ACTION_UP events
-    * */
+     * Handles ACTION_DOWN, ACTION_MOVE, ACTION_UP events
+     */
+    @Override
     public boolean onTouchEvent(MotionEvent event){
         if (arenaIntent == ArenaIntent.UNSET && !obstacleEdit){
             scaleGrid(event);
@@ -224,25 +223,27 @@ public class ArenaView extends View {
             curRect = entry.getValue();
             if(curCell.col== 0 && curCell.row == 0){
                 maxLeft = entry.getKey();
-            }else if(curCell.col== 19 && curCell.row == 19){
+            } else if(curCell.col== 19 && curCell.row == 19){
                 maxRight = entry.getKey();
             }
             if(curRect != null && curCell != null) {
                 float rectX = curRect.centerX();
                 float rectY = curRect.centerY();
                 if (curRect.contains(x , y )) {
-                    System.out.println(x + " : " + y + " : " + rectX + " : " + rectY + " : " + hMargin + " : " + vMargin + " : " + cellSize);
-                    System.out.println("Coordinates: (" + curCell.col + "," + (19 - curCell.row) + ")");
-                    System.out.println(String.format("Direction: %s", Robot.robotDir));
+//                    System.out.println("Coordinates: (" + curCell.col + "," + (19 - curCell.row) + ")");
+//                    System.out.println(String.format("Direction: %s", Robot.robotDir));
                     if(isEditMap){
+                        // Check if the user is setting obstacles
                         if(arenaIntent == ArenaIntent.SETTING_OBSTACLES){
+                            // If no obstacle is selected, check if a new obstacle can be placed
                             if(!obstacleSelected){
                                 if(curCell.type == "" && event.getAction()==MotionEvent.ACTION_UP){
                                     curCell.type = "obstacle";
                                     obstacles.add(new Obstacle(curCell));
-                                    invalidate();
+                                    invalidate(); // Redraw the arena
                                     this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), obstacles.get(obstacles.size() - 1).imageDir), false);
                                     break;
+                                // If clicking on an existing obstacle, select it for editing
                                 } else if (curCell.type == "obstacle"){
                                     for(Obstacle obstacle: obstacles){
                                         if(obstacle.cell == curCell){
@@ -251,56 +252,53 @@ public class ArenaView extends View {
                                             editingObs_orig_y = obstacle.cell.row;
                                         }
                                     }
-                                    obstacleSelected = true;
-                                    System.out.println("Obstacle Selected");
+                                    obstacleSelected = true; // set to true so that future actions affect this obstacle
                                 }
+                            // If an obstacle is selected and the user releases touch, finalize the move
                             } else if(obstacleSelected && event.getAction()==MotionEvent.ACTION_UP){
+                                // If the new cell is empty, set it as an obstacle
                                 if(curCell.col == editingObs.cell.col && curCell.row == editingObs.cell.row && curCell.type==""){
                                     curCell.type = "obstacle";
-                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, curCell.row, editingObs.imageDir), false);
+                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), editingObs.imageDir), false);
                                 }
                                 invalidate();
                                 obstacleSelected = false;
+                            // If an obstacle is selected and the user is moving it, update its position
                             } else if(obstacleSelected && event.getAction()==MotionEvent.ACTION_MOVE){
                                 editingObs.getCell().setType("");
                                 dragObstacle(event, entry.getKey(), editingObs);
                             }
-
-                        }else if(arenaIntent == ArenaIntent.SETTING_ROBOT){
+                        // If the user is setting the robot, update its position
+                        } else if(arenaIntent == ArenaIntent.SETTING_ROBOT){
                             setRobot(curCell.col, curCell.row, "N");
                             if (event.getAction()==MotionEvent.ACTION_UP) {
-                                this.btService.write(String.format("Robot set at (%d, %d) facing %s", curCell.col, curCell.row, "N"), false);
+                                this.btService.write(String.format("Robot set at (%d, %d) facing %s", curCell.col, (19 - curCell.row), "N"), false);
                             }
                         }
                     }
-                    else{
+                    else {
                         obstacleEdit = false;
                     }
                 } else if(obstacleSelected && editingObs != null && arenaIntent == ArenaIntent.SETTING_OBSTACLES){
-                    //Obstacle delete
-                    if(event.getAction() ==MotionEvent.ACTION_MOVE){
+                    // Remove obstacle
+                    if(event.getAction() == MotionEvent.ACTION_MOVE){
                         if(x < gridMap.get(maxLeft).centerX() || x > gridMap.get(maxRight).centerX()){
                             if(editingObs != null){
                                 editingObs.getCell().setType("");
                                 obstacles.remove(editingObs);
                                 obstacleSelected = false;
                                 invalidate();
-                                this.btService.write(String.format("Obstacle removed from (%d,%d) facing (%s)", editingObs_orig_x, editingObs_orig_y, editingObs.getImageDir()), false);
+                                this.btService.write(String.format("Obstacle removed from (%d,%d) facing (%s)", editingObs_orig_x, (19 - editingObs_orig_y), editingObs.getImageDir()), false);
                             }
-
                         }
                     }
                 }
             }
-
-
         }
-        System.out.println(String.format("Final Direction: %s", Robot.robotDir));
         return true;
     }
 
     private void scaleGrid(MotionEvent event){
-        System.out.println("scaleGrid");
         isEditMap = false;
         float x = event.getX();
         float y = event.getY();
@@ -358,7 +356,6 @@ public class ArenaView extends View {
     }
 
     private void dragObstacle(MotionEvent event, Cell curCell, Obstacle obstacle){
-        System.out.println("dragObstacle");
         int index = obstacles.indexOf(obstacle);
         try{
             if(curCell.type.equals("")){
@@ -376,7 +373,6 @@ public class ArenaView extends View {
                             curCell.type = "";
                             obstacles.get(index).cell = curCell;
                         }
-
                         break;
                 }
             }
@@ -415,18 +411,19 @@ public class ArenaView extends View {
                 cellRadius, // ry
                 paint // Paint
         );
-        // draw number on obstacle
+        // Draw number on obstacle
         if (text != null){
-            float cellWidth = ((x+1f)*cellSize - (x+0.1f)*cellSize);
-            float cellHeight = ((y+1f)*cellSize - (y+0.1f)*cellSize);
+            float cellWidth = ((x+1f) * cellSize - (x+0.1f) * cellSize);
+            float cellHeight = ((y+1f) * cellSize - (y+0.1f) * cellSize);
             Rect bounds = new Rect();
             numPaint.getTextBounds(text, 0, text.length(), bounds);
             canvas.drawText(text,
-                    ((x+0.1f)*cellSize + cellWidth / 2f - bounds.width() / 2f - bounds.left),
-                    ((y+0.1f)*cellSize + cellHeight / 2f + bounds.height() / 2f - bounds.bottom),
+                    ((x+0.1f) * cellSize + cellWidth / 2f - bounds.width() / 2f - bounds.left),
+                    ((y+0.1f) * cellSize + cellHeight / 2f + bounds.height() / 2f - bounds.bottom),
                     numPaint);
         }
     }
+
     private void plotObstacleDir(Canvas canvas,Obstacle obstacle){
         RectF cellRect = new RectF(0,0,0,0);
         // For all plotting of rectangles, need to +1 to the col value to account for the grid numbers
@@ -442,13 +439,11 @@ public class ArenaView extends View {
                 break;
             case "BOTTOM":
                 cellRect = new RectF((obstacle.cell.col+1.2f) * cellSize, (obstacle.cell.row+ 0.85f)* cellSize, (obstacle.cell.col + 1.9f) * cellSize, (obstacle.cell.row + 1f)*cellSize);
-                //(1f), canvasHeight, 1f*canvasWidth, (1f/1.25f)*canvasHeight
                 break;
         }
         int cellRadius = 10;
         canvas.drawRoundRect(cellRect, cellRadius, cellRadius, obstacleHeadPaint);
     }
-
 
     public boolean setObstacleImageID(String obstacleNumber, String imageID){
         if (-1 < Integer.parseInt(obstacleNumber)-1 && Integer.parseInt(obstacleNumber)-1 < obstacles.size()) {
@@ -463,7 +458,7 @@ public class ArenaView extends View {
     }
 
     public Boolean setRobot(int xCenter, int yCenter, String dir){
-        System.out.println(String.format("Arena.setRobot: x:%d, y:%d, dir:%s", xCenter, yCenter, dir));
+        System.out.println(String.format("Arena.setRobot: x:%d, y:%d, dir:%s", xCenter, (19 - yCenter), dir));
         if(yCenter<1 || yCenter>=ROWS-1 || xCenter>=COLS-1 || xCenter<1){
             System.out.println("Out of bounds: Robot need nine cells");
             return false;
@@ -496,8 +491,9 @@ public class ArenaView extends View {
         invalidate();
     }
 
-
-    //To listen arena view data changes on Main activity.
+    /*
+     * To listen arena view data changes on Main activity
+     */
     public interface DataEventListener {
         public void onEventOccurred();
     }
@@ -517,5 +513,4 @@ public class ArenaView extends View {
         }
         return Integer.toString(0);
     }
-
 }
