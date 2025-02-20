@@ -468,10 +468,10 @@ public class ArenaView extends View {
             return success;
         }
     }
-    public String moveRobot(String nextDir){
-        Robot.moveRobot(nextDir, obstacles);
+    public boolean moveRobot(String nextDir){
+        boolean success = Robot.moveRobot(nextDir, obstacles);
         invalidate();
-        return Robot.robotDir;
+        return success;
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
