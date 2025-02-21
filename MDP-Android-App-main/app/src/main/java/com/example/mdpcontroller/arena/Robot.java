@@ -137,30 +137,26 @@ public class Robot {
      * @param movement direction of robot movement
      * @param obstacles list of current obstacles
      */
-    public static void moveRobot(String movement,ArrayList<Obstacle> obstacles){
+    public static boolean moveRobot(String movement,ArrayList<Obstacle> obstacles){
         if (!isValidMove(movement, obstacles)) {
-            return;
+            return false;
         }
 
         switch(movement){
             case("F"):
             case("B"):
-                forwardBackwardMove(movement, obstacles);
-                break;
+                return forwardBackwardMove(movement, obstacles);
             case("L"):
-                turnLeft(obstacles);
-                break;
+                return turnLeft(obstacles);
             case("BL"):
-                reverseLeft(obstacles);
-                break;
+                return reverseLeft(obstacles);
             case("R"):
-                turnRight(obstacles);
-                break;
+                return turnRight(obstacles);
             case("BR"):
-                reverseRight(obstacles);
-                break;
+                return reverseRight(obstacles);
+            default:
+                return false;
         }
-        return;
     }
 
     /*
@@ -215,7 +211,7 @@ public class Robot {
      * @param movement direction of robot movement
      * @param obstacles list of current obstacles
      */
-    private static void forwardBackwardMove(String movement,ArrayList<Obstacle> obstacles){
+    private static boolean forwardBackwardMove(String movement,ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
         if((movement == "F" && robotDir == "N")||(movement == "B" && robotDir == "S")){
@@ -228,15 +224,14 @@ public class Robot {
         }else if((movement == "F" && robotDir == "E")||(movement == "B" && robotDir == "W")){
             yCenter +=1;
         }
-        setRobot(yCenter,xCenter,robotDir,obstacles);
-
+        return setRobot(yCenter,xCenter,robotDir,obstacles);
     }
 
     /**
      * Turn Robot left
      * @param obstacles current list of obstacles
      */
-    private static void turnLeft(ArrayList<Obstacle> obstacles){
+    private static boolean turnLeft(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
         String nextDir = "";
@@ -262,14 +257,13 @@ public class Robot {
                 nextDir = "S";
                 break;
         }
-        setRobot(yCenter,xCenter,nextDir,obstacles);
-
+        return setRobot(yCenter,xCenter,nextDir,obstacles);
     }
     /**
      * Turn Robot right
      * @param obstacles current list of obstacles
      */
-    private static void turnRight(ArrayList<Obstacle> obstacles){
+    private static boolean turnRight(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
         String nextDir = "";
@@ -296,14 +290,14 @@ public class Robot {
                 break;
 
         }
-        setRobot(yCenter, xCenter, nextDir,obstacles);
+        return setRobot(yCenter, xCenter, nextDir,obstacles);
     }
 
     /**
      * Reverse Robot right
      * @param obstacles current list of obstacles
      */
-    private static void reverseRight(ArrayList<Obstacle> obstacles){
+    private static boolean reverseRight(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
         String nextDir = "";
@@ -329,13 +323,13 @@ public class Robot {
                 nextDir = "S";
                 break;
         }
-        setRobot(yCenter,xCenter,nextDir,obstacles);
+        return setRobot(yCenter,xCenter,nextDir,obstacles);
     }
     /**
      * Reverse Robot left
      * @param obstacles current list of obstacles
      */
-    private static void reverseLeft(ArrayList<Obstacle> obstacles){
+    private static boolean reverseLeft(ArrayList<Obstacle> obstacles){
         int xCenter = robotMatrix[1][1].row;
         int yCenter = robotMatrix[1][1].col;
         String nextDir = "";
@@ -361,7 +355,6 @@ public class Robot {
                 nextDir = "N";
                 break;
         }
-        setRobot(yCenter,xCenter,nextDir,obstacles);
+        return setRobot(yCenter,xCenter,nextDir,obstacles);
     }
-
 }

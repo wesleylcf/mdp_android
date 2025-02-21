@@ -457,8 +457,10 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                 JSONObject arenaInfo = new JSONObject();
                 arenaInfo.put("cat", "manual");
                 arenaInfo.put("value", rpiDir + distanceOrAngle);
-                btService.write(arenaInfo.toString(), DEBUG);
-                arena.moveRobot(dir);
+                boolean validMove = arena.moveRobot(dir);
+                if (validMove) {
+                    btService.write(arenaInfo.toString(), DEBUG);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
