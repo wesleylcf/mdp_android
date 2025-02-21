@@ -177,7 +177,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         case ("TARGET"): {
                             if (Integer.parseInt(messageArr[2]) < 11 || Integer.parseInt(messageArr[2]) > 40) {
                                 valid_image = false;
-                                valid_target = arena.setObstacleImageID(messageArr[1], "-1");
+//                                valid_target = arena.setObstacleImageID(messageArr[1], "-1");
                             } else {
                                 valid_image = true;
                                 valid_target = arena.setObstacleImageID(messageArr[1], messageArr[2]);
