@@ -419,7 +419,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             case(R.id.fButton): {
                 dir = "F";
                 rpiDir = "FW";
-                distanceOrAngle = "050";
+                distanceOrAngle = "010";
                 break;
             }
             case(R.id.rButton): {
@@ -435,7 +435,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             case(R.id.bButton): {
                 dir = "B";
                 rpiDir = "BW";
-                distanceOrAngle = "050";
+                distanceOrAngle = "010";
                 break;
             }
             case(R.id.brButton): {
