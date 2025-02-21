@@ -48,9 +48,11 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Locale;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -191,6 +193,11 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         case ("STATUS"): {
 //                            displayMessage("Status update\n" + messageArr[1]);
                             TextView robotStatus = findViewById(R.id.obstacleStatusTextView);
+                            String[] allowedStatusesList = {"IDLE", "READY TO MOVE", "MOVING FORWARD", "MOVING BACKWARD", "MOVING LEFT", "MOVING RIGHT"};
+                            Set<String> allowedStatuses = new HashSet<>(Arrays.asList(allowedStatusesList));
+                            if (!allowedStatuses.contains(messageArr[1])) {
+                                return;
+                            }
                             robotStatus.setText(messageArr[1]);
 //                            String[] arr = {"Exploring", "Fastest Path", "Turning Left", "Turning Right", "Moving Forward", "Reversing"};
 //                            boolean valid_status = Arrays.asList(arr).contains(messageArr[1]);
