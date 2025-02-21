@@ -241,7 +241,8 @@ public class ArenaView extends View {
                                     curCell.type = "obstacle";
                                     obstacles.add(new Obstacle(curCell));
                                     invalidate(); // Redraw the arena
-                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), obstacles.get(obstacles.size() - 1).imageDir), false);
+//                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), obstacles.get(obstacles.size() - 1).imageDir), false);
+                                    System.out.println(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), obstacles.get(obstacles.size() - 1).imageDir));
                                     break;
                                 // If clicking on an existing obstacle, select it for editing
                                 } else if (curCell.type == "obstacle"){
@@ -259,7 +260,8 @@ public class ArenaView extends View {
                                 // If the new cell is empty, set it as an obstacle
                                 if(curCell.col == editingObs.cell.col && curCell.row == editingObs.cell.row && curCell.type==""){
                                     curCell.type = "obstacle";
-                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), editingObs.imageDir), false);
+//                                    this.btService.write(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), editingObs.imageDir), false);
+                                    System.out.println(String.format("Obstacle set at (%d,%d) facing (%s)", curCell.col, (19 - curCell.row), obstacles.get(obstacles.size() - 1).imageDir));
                                 }
                                 invalidate();
                                 obstacleSelected = false;
@@ -272,7 +274,8 @@ public class ArenaView extends View {
                         } else if(arenaIntent == ArenaIntent.SETTING_ROBOT){
                             setRobot(curCell.col, curCell.row, "N");
                             if (event.getAction()==MotionEvent.ACTION_UP) {
-                                this.btService.write(String.format("Robot set at (%d, %d) facing %s", curCell.col, (19 - curCell.row), "N"), false);
+//                                this.btService.write(String.format("Robot set at (%d, %d) facing %s", curCell.col, (19 - curCell.row), "N"), false);
+
                             }
                         }
                     }
@@ -288,7 +291,7 @@ public class ArenaView extends View {
                                 obstacles.remove(editingObs);
                                 obstacleSelected = false;
                                 invalidate();
-                                this.btService.write(String.format("Obstacle removed from (%d,%d) facing (%s)", editingObs_orig_x, (19 - editingObs_orig_y), editingObs.getImageDir()), false);
+//                                this.btService.write(String.format("Obstacle removed from (%d,%d) facing (%s)", editingObs_orig_x, (19 - editingObs_orig_y), editingObs.getImageDir()), false);
                             }
                         }
                     }

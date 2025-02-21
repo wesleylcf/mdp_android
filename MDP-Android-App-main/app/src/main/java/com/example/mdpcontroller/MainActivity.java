@@ -235,19 +235,19 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                             String orient;
                             switch ((int) Double.parseDouble(messageArr[3].trim())) {
                                 case (0):
-                                    orient = "N";
-                                    break;
-                                case (90):
-                                    orient = "W";
-                                    break;
-                                case (180):
-                                    orient = "S";
-                                    break;
-                                case (270):
                                     orient = "E";
                                     break;
-                                default:
+                                case (1):
                                     orient = "N";
+                                    break;
+                                case (2):
+                                    orient = "W";
+                                    break;
+                                case (3):
+                                    orient = "S";
+                                    break;
+                                default:
+                                    orient = "";
                                     break;
                             }
                             String combined = String.format("(%d,%d,%s)", xCoord, yCoord, orient);

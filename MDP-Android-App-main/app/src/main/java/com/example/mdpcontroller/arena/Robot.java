@@ -30,6 +30,10 @@ public class Robot {
         System.out.println(String.format("DIRECTION=%s", robotDir));
     }
     public static boolean setRobot(int xCenter, int yCenter,  String dir, ArrayList<Obstacle> obstacles){
+        if(!isValidDirection(dir)) {
+            System.out.println("[setRobot] Invalid direction");
+            return false;
+        }
         if (!isValidNewPosition(xCenter, yCenter, obstacles)) {
             System.out.println("[setRobot] Invalid position");
             return false;
@@ -130,6 +134,14 @@ public class Robot {
             }
         }
         return true;
+    }
+
+    /**
+     * Check whether the direction is within the range (0-3)
+     * @param dir direction of robot
+     */
+    public static boolean isValidDirection(String dir) {
+        return dir.equals("N") || dir.equals("E") || dir.equals("S") || dir.equals("W");
     }
 
     /**
