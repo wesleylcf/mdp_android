@@ -568,81 +568,89 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         this.api.startRobot(view);
     }
 
+    public void startTimer(Button b) {
+        if (b.getId() == R.id.startExplore) {
+            moveList.clear();
+            // reset obstacles
+            if(arena.obstacles.size() > 0){
+                for(Obstacle obstacle: arena.obstacles){
+                    obstacle.explored = false;
+                    obstacle.imageID = "-1";
+                }
+                arena.invalidate();
+            }
+            // prepare timer
+            timerRunnable = new TimerRunnable(findViewById(R.id.timerTextViewExplore));
+            curObsNum = "0";
+            b.setText(R.string.stop_explore);
+            Cell curCell;
+            int xCoord, yCoord;
+            String dir = "0";
+            StringBuilder cmd = new StringBuilder("START/EXPLORE");
+
+            // Robot position
+            if (Robot.robotMatrix[1][1] != null) {
+                Cell center = Robot.robotMatrix[1][1];
+                cmd.append(String.format(Locale.getDefault(),"/(R,%02d,%02d,0)", center.col, 19-center.row));
+                if (DEBUG) {
+                    displayMessage(String.format("Robot coordinates: (%d, %d)", center.col, 19-center.row));
+                }
+            }
+            else cmd.append("/(R,01,01,0)");
+
+            // Obstacle position
+            for (int i = 0; i < arena.obstacles.size(); i++) {
+                switch(arena.obstacles.get(i).imageDir){
+                    case("RIGHT"): dir = "0"; break;
+                    case("TOP"): dir = "1"; break;
+                    case("LEFT"): dir = "2"; break;
+                    case("BOTTOM"): dir = "3"; break;
+                }
+                curCell = arena.obstacles.get(i).cell;
+                xCoord = curCell.col;
+                yCoord = 19-curCell.row; // invert y coordinates since algorithm uses bottom left as origin
+                if (DEBUG) {
+                    displayMessage(String.format("Obstacle(%d) coordinates: (%d, %d) with direction enum %s", i, xCoord, yCoord, dir));
+                }
+                cmd.append(String.format(Locale.getDefault(), "/(%02d,%02d,%02d,%s)", i, xCoord, yCoord, dir));
+                timerRunnable.startTime = 0;
+            }
+            btService.write(cmd.toString(), DEBUG);
+            TextView rbTV = findViewById(R.id.obstacleStatusTextView);
+            rbTV.setText(R.string.calc_path);
+            timerRunnable.startTime = System.currentTimeMillis();
+            timerHandler.postDelayed(timerRunnable, 0);
+        } else {
+            timerRunnable = new TimerRunnable(findViewById(R.id.timerTextViewPath));
+            btService.write("START/PATH", DEBUG);
+            b.setText(R.string.stop_fastest_path);
+            timerRunnable.startTime = System.currentTimeMillis();
+            timerHandler.postDelayed(timerRunnable, 0);
+        }
+        toggleActivateButtons(false);
+    }
+
+    public void stopTimer(Button b) {
+        if (b.getId() == R.id.startExplore) {
+            b.setText(R.string.start_explore);
+        } else {
+            b.setText(R.string.start_fastest_path);
+        }
+        timerHandler.removeCallbacks(timerRunnable);
+        timerRunnable = null;
+        toggleActivateButtons(true);
+//                btService.write("STOP", DEBUG);
+        TextView rbTV = findViewById(R.id.obstacleStatusTextView);
+        rbTV.setText(R.string.idle);
+    }
+
     public void startStopTimer(View view){
         try {
             Button b = (Button) view;
-            if (timerRunnable != null) { // timer was running, reset the timer and send stop command
-                if (b.getId() == R.id.startExplore) {
-                    b.setText(R.string.start_explore);
-                } else {
-                    b.setText(R.string.start_fastest_path);
-                }
-                timerHandler.removeCallbacks(timerRunnable);
-                timerRunnable = null;
-                toggleActivateButtons(true);
-//                btService.write("STOP", DEBUG);
-                TextView rbTV = findViewById(R.id.obstacleStatusTextView);
-                rbTV.setText(R.string.idle);
-            } else { // start explore
-                if (b.getId() == R.id.startExplore) {
-                    moveList.clear();
-                    // reset obstacles
-                    if(arena.obstacles.size() > 0){
-                        for(Obstacle obstacle: arena.obstacles){
-                            obstacle.explored = false;
-                            obstacle.imageID = "-1";
-                        }
-                        arena.invalidate();
-                    }
-                    // prepare timer
-                    timerRunnable = new TimerRunnable(findViewById(R.id.timerTextViewExplore));
-                    curObsNum = "0";
-                    b.setText(R.string.stop_explore);
-                    Cell curCell;
-                    int xCoord, yCoord;
-                    String dir = "0";
-                    StringBuilder cmd = new StringBuilder("START/EXPLORE");
-
-                    // Robot position
-                    if (Robot.robotMatrix[1][1] != null) {
-                        Cell center = Robot.robotMatrix[1][1];
-                        cmd.append(String.format(Locale.getDefault(),"/(R,%02d,%02d,0)", center.col, 19-center.row));
-                        if (DEBUG) {
-                            displayMessage(String.format("Robot coordinates: (%d, %d)", center.col, 19-center.row));
-                        }
-                    }
-                    else cmd.append("/(R,01,01,0)");
-
-                    // Obstacle position
-                    for (int i = 0; i < arena.obstacles.size(); i++) {
-                        switch(arena.obstacles.get(i).imageDir){
-                            case("RIGHT"): dir = "0"; break;
-                            case("TOP"): dir = "1"; break;
-                            case("LEFT"): dir = "2"; break;
-                            case("BOTTOM"): dir = "3"; break;
-                        }
-                        curCell = arena.obstacles.get(i).cell;
-                        xCoord = curCell.col;
-                        yCoord = 19-curCell.row; // invert y coordinates since algorithm uses bottom left as origin
-                        if (DEBUG) {
-                            displayMessage(String.format("Obstacle(%d) coordinates: (%d, %d) with direction enum %s", i, xCoord, yCoord, dir));
-                        }
-                        cmd.append(String.format(Locale.getDefault(), "/(%02d,%02d,%02d,%s)", i, xCoord, yCoord, dir));
-                        timerRunnable.startTime = 0;
-                    }
-                    btService.write(cmd.toString(), DEBUG);
-                    TextView rbTV = findViewById(R.id.obstacleStatusTextView);
-                    rbTV.setText(R.string.calc_path);
-                    timerRunnable.startTime = System.currentTimeMillis();
-                    timerHandler.postDelayed(timerRunnable, 0);
-                } else {
-                    timerRunnable = new TimerRunnable(findViewById(R.id.timerTextViewPath));
-                    btService.write("START/PATH", DEBUG);
-                    b.setText(R.string.stop_fastest_path);
-                    timerRunnable.startTime = System.currentTimeMillis();
-                    timerHandler.postDelayed(timerRunnable, 0);
-                }
-                toggleActivateButtons(false);
+            if (timerRunnable == null) {
+                startTimer(b);
+            } else {
+                stopTimer(b);
             }
         } catch (Exception e) {
             if (DEBUG) {
