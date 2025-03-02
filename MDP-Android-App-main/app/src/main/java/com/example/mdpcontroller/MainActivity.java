@@ -156,137 +156,69 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 
     // BroadcastReceiver used to parse messages received over bluetooth.
     private final BroadcastReceiver msgReceiver = new BroadcastReceiver() {
-        /*
-         * Can parse multiple commands as a single string if they are delimited with '&', probably to minimize communication overhead.
-         * Each command has a structure <command_name>,...<command arg>
-         * */
         public void onReceive(Context context, Intent intent) {
-            String fullMessage =  intent.getExtras().getString("message");
+            String fullMessage = intent.getExtras().getString("message");
             if (DEBUG) {
                 displayMessage("Debug Mode\n" + fullMessage);
                 System.out.println("Debug Mode\n" + fullMessage);
             }
-            if (fullMessage.length() ==0) return;
-            // Categorize received messages
-            if (fullMessage.charAt(0) == '&') fullMessage = fullMessage.substring(1);
-            String[] commandArr = fullMessage.split("&");
-            for (String message: commandArr) {
-                try {
-                    String[] messageArr = message.split("\\|"); // remove header
-                    if (messageArr.length > 1) messageArr = messageArr[1].split(DELIMITER);
-                    else messageArr = messageArr[0].split(DELIMITER);
-                    switch (messageArr[0]) {
-                        // Format: TARGET/<obstacle number>/<target id>
-                        case ("TARGET"): {
-                            if (Integer.parseInt(messageArr[2]) < 11 || Integer.parseInt(messageArr[2]) > 40) {
-                                valid_image = false;
-//                                valid_target = arena.setObstacleImageID(messageArr[1], "-1");
-                            } else {
-                                valid_image = true;
-                                valid_target = arena.setObstacleImageID(messageArr[1], messageArr[2]);
-                            }
-                            if (!valid_target || !valid_image) {
-                                displayMessage("Invalid imageID or obstacleID: " + message);
-                            }
-                            break;
-                        }
-                        // Format: STATUS/<msg>
-                        case ("STATUS"): {
-//                            displayMessage("Status update\n" + messageArr[1]);
-                            TextView robotStatus = findViewById(R.id.obstacleStatusTextView);
-                            String[] allowedStatusesList = {"IDLE", "READY TO MOVE", "MOVING FORWARD", "MOVING BACKWARD", "MOVING LEFT", "MOVING RIGHT"};
-                            Set<String> allowedStatuses = new HashSet<>(Arrays.asList(allowedStatusesList));
-                            if (!allowedStatuses.contains(messageArr[1])) {
-                                return;
-                            }
-                            robotStatus.setText(messageArr[1]);
-//                            String[] arr = {"Exploring", "Fastest Path", "Turning Left", "Turning Right", "Moving Forward", "Reversing"};
-//                            boolean valid_status = Arrays.asList(arr).contains(messageArr[1]);
-//                            if (valid_status) {
-//                                robotStatus.setText(messageArr[1]);
-//                            } else {
-//                                displayMessage("Invalid status: " + message);
-//                            }
-                            break;
-                        }
-                        // Format: DEBUG/<msg>
-                        case ("DEBUG"): {
-                            if (DEBUG) displayMessage("DEBUG\n" + messageArr[1]);
-                            break;
-                        }
-                        case ("FINISH"): {
-                            System.out.println("Explore / Path Text: " + ((Button) findViewById(R.id.startExplore)).getText().toString() + " & " + ((Button) findViewById(R.id.startPath)).getText().toString());
-                            if (messageArr[1].equals("EXPLORE") && ((Button) findViewById(R.id.startExplore)).getText().toString() == getString(R.string.stop_explore)) {
-                                startStopTimer(findViewById(R.id.startExplore));
-                                TextView posTV = findViewById(R.id.robotPosTextView);
-                                TextView statTV = findViewById(R.id.obstacleStatusTextView);
-                                if (posTV != null) posTV.setText(R.string.x_y_dir);
-                                if (statTV != null) statTV.setText(R.string.idle);
-                                String timeTaken = ((TextView) findViewById(R.id.timerTextViewExplore)).getText().toString();
-                                displayMessage("Exploration complete!\nTime taken: " + timeTaken);
-                            } else if (messageArr[1].equals("PATH") && ((Button) findViewById(R.id.startPath)).getText().toString() == getString(R.string.stop_fastest_path)) {
-                                startStopTimer(findViewById(R.id.startPath));
-                                String timeTaken = ((TextView) findViewById(R.id.timerTextViewPath)).getText().toString();
-                                displayMessage("Fastest path complete!\nTime taken: " + timeTaken);
-                            } else {
-                                displayMessage("Task is not running: " + messageArr[1]);
-                            }
-                            break;
-                        }
-                        // Update map based on Rpi coordinates
-                        case ("ROBOT"): {
-                            if (messageArr.length < 3) break;
-                            TextView robotPosTextView = findViewById(R.id.robotPosTextView);
-                            // coordinate for the obstacle
-                            int xCoord = (int) Double.parseDouble(messageArr[1].trim());
-                            int yCoord = (int) Double.parseDouble(messageArr[2].trim());
-                            String orient;
-                            switch ((int) Double.parseDouble(messageArr[3].trim())) {
-                                case (0):
-                                    orient = "E";
-                                    break;
-                                case (1):
-                                    orient = "N";
-                                    break;
-                                case (2):
-                                    orient = "W";
-                                    break;
-                                case (3):
-                                    orient = "S";
-                                    break;
-                                default:
-                                    orient = "";
-                                    break;
-                            }
-                            String combined = String.format("(%d,%d,%s)", xCoord, yCoord, orient);
-                            System.out.println("combined: " + combined);
+            if (fullMessage == null || fullMessage.isEmpty()) return;
 
-                            // Check if coordinates are valid
-                            // If valid, update robot position text view and the arena GUI
-                            // Otherwise, do not update anything, display the invalid error message
-                            valid_pos = arena.setRobot(xCoord, 19-yCoord, orient);
-                            if (valid_pos) {
-                                robotPosTextView.setText(combined);
-                            } else {
-                                displayMessage("Invalid robot position on map: " + message);
-                            }
+            try {
+                JSONObject jsonMessage = new JSONObject(fullMessage);
+                String category = jsonMessage.getString("cat");
+                JSONObject value = jsonMessage.getJSONObject("value");
 
-//                            // Reply to Rpi for acknowledgement
-//                            Intent rcv_intent = new Intent("message_received");
-//                            rcv_intent.putExtra("message", "ROBOT_ACK/" + String.format(Locale.getDefault(), "(%d,%d,%s)", xCoord, yCoord, orient));
-//                            context.sendBroadcast(rcv_intent);
-                            break;
+                switch (category) {
+                    case "image-rec": {
+                        String obstacleId = value.getString("obstacle_id");
+                        String imageId = value.getString("image_id");
+
+                        int imageIdInt = Integer.parseInt(imageId);
+                        if (imageIdInt < 11 || imageIdInt > 40) {
+                            valid_image = false;
+                        } else {
+                            valid_image = true;
+                            valid_target = arena.setObstacleImageID(obstacleId, imageId);
                         }
-                        default: {
-                            displayMessage("Unrecognized Command\n" + message);
-                            break;
+                        if (!valid_target || !valid_image) {
+                            displayMessage("Invalid imageID or obstacleID: " + fullMessage);
                         }
+                        break;
                     }
-                } catch (Exception e) {
-                    // message incorrect message parameters
-                    System.out.println(e.getStackTrace());
-                    displayMessage("ERROR (" + e.getMessage() + ")\n" + fullMessage);
+                    case "location": {
+                        int xCoord = value.getInt("x");
+                        int yCoord = value.getInt("y");
+                        int direction = value.getInt("d");
+
+                        String orient;
+                        switch (direction) {
+                            case 0: orient = "E"; break;
+                            case 1: orient = "N"; break;
+                            case 2: orient = "W"; break;
+                            case 3: orient = "S"; break;
+                            default: orient = ""; break;
+                        }
+
+                        String combined = String.format("(%d,%d,%s)", xCoord, yCoord, orient);
+                        System.out.println("combined: " + combined);
+
+                        valid_pos = arena.setRobot(xCoord, 19 - yCoord, orient);
+                        if (valid_pos) {
+                            TextView robotPosTextView = findViewById(R.id.robotPosTextView);
+                            robotPosTextView.setText(combined);
+                        } else {
+                            displayMessage("Invalid robot position on map: " + fullMessage);
+                        }
+                        break;
+                    }
+                    default: {
+                        displayMessage("Unrecognized Command\n" + fullMessage);
+                        break;
+                    }
                 }
+            } catch (JSONException e) {
+                displayMessage("ERROR (" + e.getMessage() + ")\n" + fullMessage);
             }
         }
     };
@@ -623,13 +555,15 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             rbTV.setText(R.string.calc_path);
             timerRunnable.startTime = System.currentTimeMillis();
             timerHandler.postDelayed(timerRunnable, 0);
-        } else {
+        } else if (b.getId() == R.id.startPath) {
             api.startRobot(arena);
             timerRunnable = new TimerRunnable(findViewById(R.id.timerTextViewPath));
 //            btService.write("START/PATH", DEBUG);
             b.setText(R.string.stop_fastest_path);
             timerRunnable.startTime = System.currentTimeMillis();
             timerHandler.postDelayed(timerRunnable, 0);
+        } else {
+            throw new RuntimeException("Invalid button id for startTimer");
         }
         toggleActivateButtons(false);
     }
