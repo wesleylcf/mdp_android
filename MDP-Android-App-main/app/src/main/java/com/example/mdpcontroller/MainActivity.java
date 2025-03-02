@@ -67,6 +67,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     private BtStatusChangedReceiver conReceiver;
     private AppDataModel appDataModel;
     private ArenaView arena;
+    private ApiService api;
     private List<String> moveList;
     // for timer
     private final Handler timerHandler  = new Handler();
@@ -92,7 +93,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         ((ScrollView)findViewById(R.id.SCROLLER_ID)).fullScroll(View.FOCUS_DOWN);
         arena = findViewById(R.id.arena);
         arena.getBluetoothService(btService);
-
+        this.api = new ApiService(btService);
         // Tab-Layout
         tabLayout = findViewById(R.id.tabLayout);
         tabViewPager = findViewById(R.id.tabViewPager);
@@ -518,54 +519,8 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         logs.setText(null);
     }
 
-    /*
-     *   Function to send the obstacles coordinates to RPI
-     */
     public void sendArenaInfo(View view) {
-        try {
-            JSONObject arenaInfo = new JSONObject();
-            arenaInfo.put("cat", "obstacles");
-            JSONObject valueObject = new JSONObject();
-            JSONArray obstaclesArray = new JSONArray();
-            int id = 1;
-
-            // Loop through all obstacles in ArenaView and add them to the JSON array
-            for (Obstacle obstacle : arena.obstacles) {
-                JSONObject obstacleJSON = new JSONObject();
-                obstacleJSON.put("x", obstacle.cell.col);
-                obstacleJSON.put("y", 19 - obstacle.cell.row);
-                obstacleJSON.put("id", id++);
-                int direction;
-                switch (obstacle.imageDir) {
-                    case "TOP":
-                        direction = 1;
-                        break;
-                    case "RIGHT":
-                        direction = 0;
-                        break;
-                    case "BOTTOM":
-                        direction = 3;
-                        break;
-                    case "LEFT":
-                        direction = 2;
-                        break;
-                    default:
-                        direction = -1; // Handle unexpected values
-                        break;
-                }
-                obstacleJSON.put("d", direction);
-                obstaclesArray.put(obstacleJSON);
-            }
-            valueObject.put("obstacles", obstaclesArray);
-            arenaInfo.put("value", valueObject);
-
-            // Convert JSON to string and send via Bluetooth
-            String jsonString = arenaInfo.toString();
-            btService.write(jsonString, false);
-            System.out.print("Obstacles sent: " + jsonString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        this.api.sendArenaInfo(view, arena);
     }
 
     public void onClickSimulatorBtn(View view){
@@ -610,14 +565,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     }
 
     public void startExplore(View view) {
-        try {
-            JSONObject json = new JSONObject();
-            json.put("cat", "control");
-            json.put("value", "start");
-            btService.write(json.toString(), DEBUG);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        this.api.startRobot(view);
     }
 
     public void startStopTimer(View view){
