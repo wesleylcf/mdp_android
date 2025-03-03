@@ -20,12 +20,10 @@
         android:textColor="@color/white"
         app:backgroundTint="@color/transparent"
         app:cornerRadius="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/btm_guideline_4"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tabLayout"  app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btm_guideline_3"
-        app:strokeColor="@color/primary_400"
+        app:layout_constraintTop_toBottomOf="@+id/arena"     app:strokeColor="@color/primary_400"
         app:strokeWidth="2dp" />
 
     <view
@@ -74,8 +72,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tabViewPager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_connect"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintTop_toBottomOf="@+id/button_connect" app:layout_constraintVertical_bias="1.0"
         app:tabBackground="@drawable/tab_selector"
         app:tabIndicatorColor="@color/transparent"
         app:tabIndicatorGravity="stretch"
@@ -94,10 +91,8 @@
         android:background="#3C4148"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btm_guideline_4"
-        app:layout_constraintVertical_bias="0.991"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout" app:layout_constraintVertical_bias="0.991"
         tools:ignore="SpeakableTextPresentCheck">
 
     </androidx.viewpager.widget.ViewPager>

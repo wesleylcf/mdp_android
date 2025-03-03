@@ -391,7 +391,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             default: return;
         }
         if(Robot.robotMatrix[0][0] == null){
-            System.out.println("Robot is not set up on map");
+            displayMessage("Robot is not set up on map");
         }else{
             try {
                 JSONObject arenaInfo = new JSONObject();
