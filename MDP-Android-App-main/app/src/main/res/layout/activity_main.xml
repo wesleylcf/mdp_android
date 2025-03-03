@@ -31,14 +31,12 @@
     <view
         android:id="@+id/arena"
         class="com.example.mdpcontroller.arena.ArenaView"
-        android:layout_width="500dp"
-        android:layout_height="500dp"
-        android:layout_gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/btm_guideline_3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btm_guideline_2" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btm_guideline_2"
+        app:layout_constraintBottom_toTopOf="@+id/btm_guideline_3" />
 
     <ScrollView
         android:id="@+id/SCROLLER_ID"
