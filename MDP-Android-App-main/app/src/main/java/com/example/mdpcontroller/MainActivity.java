@@ -155,7 +155,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     }
 
     // BroadcastReceiver used to parse messages received over bluetooth.
-    private final BroadcastReceiver msgReceiver = new BroadcastReceiver() {
+    public final BroadcastReceiver msgReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String fullMessage = intent.getExtras().getString("message");
             if (DEBUG) {
@@ -170,6 +170,12 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                 JSONObject value = jsonMessage.getJSONObject("value");
 
                 switch (category) {
+                    case "debug-msg": {
+                        String logMessage = value.getString("log");
+                        displayMessage("Debug Message (Broadcast):\n" + logMessage);
+                        System.out.println("Debug Message (Broadcast):\n" + logMessage);
+                        break;
+                    }
                     case "image-rec": {
                         String obstacleId = value.getString("obstacle_id");
                         String imageId = value.getString("image_id");
@@ -218,10 +224,31 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     }
                 }
             } catch (JSONException e) {
+                e.printStackTrace();
                 displayMessage("ERROR (" + e.getMessage() + ")\n" + fullMessage);
             }
         }
     };
+
+    /*
+     * Creates a message intent for "msg_received" with the body matching the schema of incoming bluetooth mesages
+     * */
+    public Intent createDebugMessageIntent(String msg) {
+        try {
+            JSONObject debugJson = new JSONObject();
+            debugJson.put("cat", "debug-msg");
+            JSONObject valueJson = new JSONObject();
+            valueJson.put("log", msg);
+            debugJson.put("value", valueJson);
+
+            Intent intent = new Intent("message_received");
+            intent.putExtra("message", debugJson.toString());
+            return intent;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     // Displays a string in the log TextView, prepends time received as well
     private void displayMessage(String msg) {
@@ -237,9 +264,9 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 
     // Create a BroadcastReceiver for bt_status_changed.
     public class BtStatusChangedReceiver extends BroadcastReceiver {
-        Activity main;
+        MainActivity main;
 
-        public BtStatusChangedReceiver(Activity main) {
+        public BtStatusChangedReceiver(MainActivity main) {
             super();
             this.main = main;
         }
@@ -399,7 +426,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                 arenaInfo.put("value", rpiDir + distanceOrAngle);
                 boolean validMove = arena.moveRobot(dir);
                 if (validMove) {
-                    btService.write(arenaInfo.toString(), DEBUG);
+                    btService.write(arenaInfo.toString(), true);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -453,47 +480,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 
     public void sendArenaInfo(View view) {
         this.api.sendArenaInfo(view, arena);
-    }
-
-    public void onClickSimulatorBtn(View view){
-        moveList.clear();
-        // reset obstacles
-        if(arena.obstacles.size() > 0){
-            for(Obstacle obstacle: arena.obstacles){
-                obstacle.explored = false;
-                obstacle.imageID = "-1";
-            }
-            arena.invalidate();
-        }
-
-        Cell curCell;
-        int xCoord, yCoord;
-        String dir = "0";
-        StringBuilder cmd = new StringBuilder("START/SIMULATOR");
-
-        // Robot position
-        if (Robot.robotMatrix[1][1] != null) {
-            Cell center = Robot.robotMatrix[1][1];
-            cmd.append(String.format(Locale.getDefault(),"/(R,%02d,%02d,0)", center.col, center.row));
-        }
-        else cmd.append("/(R,01,01,0)");
-
-        // Obstacle position
-        for (int i = 0; i < arena.obstacles.size(); i++) {
-            switch(arena.obstacles.get(i).imageDir){
-                case("TOP"): dir = "90"; break;
-                case("LEFT"): dir = "180"; break;
-                case("RIGHT"): dir = "0"; break;
-                case("BOTTOM"): dir = "-90"; break;
-            }
-            curCell = arena.obstacles.get(i).cell;
-            xCoord = curCell.col;
-            yCoord = curCell.row; // invert y coordinates since algorithm uses bottom left as origin
-            cmd.append(String.format(Locale.getDefault(), "/(%02d,%02d,%02d,%s)", i, xCoord, yCoord, dir));
-        }
-        btService.write(cmd.toString(), DEBUG);
-        TextView rbTV = findViewById(R.id.obstacleStatusTextView);
-        rbTV.setText(R.string.check_path);
     }
 
     public void startExplore(View view) {
