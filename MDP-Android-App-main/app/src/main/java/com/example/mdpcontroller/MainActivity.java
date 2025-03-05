@@ -193,8 +193,9 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         break;
                     }
                     case "location": {
-                        int xCoord = value.getInt("x");
-                        int yCoord = value.getInt("y");
+                        // Divide by 10 since incoming coordinates are 200x200 not 20x20
+                        int xCoord = value.getInt("x") / 10;
+                        int yCoord = value.getInt("y") / 10;
                         int direction = value.getInt("d");
 
                         String orient;
