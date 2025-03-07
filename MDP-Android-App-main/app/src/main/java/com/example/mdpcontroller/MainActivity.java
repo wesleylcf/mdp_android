@@ -215,7 +215,10 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         valid_pos = arena.setRobot(xCoord, 19 - yCoord, orient);
                         if (valid_pos) {
                             TextView robotPosTextView = findViewById(R.id.robotPosTextView);
-                            robotPosTextView.setText(combined);
+                            if (robotPosTextView != null) {
+                                robotPosTextView.setText(combined);
+                            }
+                            displayMessage("LOCATION: " + combined);
                         } else {
                             displayMessage("Invalid robot position on map: " + fullMessage);
                         }
@@ -224,7 +227,11 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     case "info": {
                         String value = jsonMessage.getString("value");
                         TextView rbTV = findViewById(R.id.obstacleStatusTextView);
-                        rbTV.setText(value);
+                        if (rbTV != null) {
+                            rbTV.setText(value);
+                            displayMessage("INFO: " + value);
+                        }
+                        break;
                     }
 
                     default: {
