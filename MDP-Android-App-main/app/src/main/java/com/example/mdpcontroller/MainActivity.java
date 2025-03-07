@@ -167,16 +167,17 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             try {
                 JSONObject jsonMessage = new JSONObject(fullMessage);
                 String category = jsonMessage.getString("cat");
-                JSONObject value = jsonMessage.getJSONObject("value");
 
                 switch (category) {
                     case "debug-msg": {
+                        JSONObject value = jsonMessage.getJSONObject("value");
                         String logMessage = value.getString("log");
                         displayMessage("Debug Message (Broadcast):\n" + logMessage);
                         System.out.println("Debug Message (Broadcast):\n" + logMessage);
                         break;
                     }
                     case "image-rec": {
+                        JSONObject value = jsonMessage.getJSONObject("value");
                         String obstacleId = value.getString("obstacle_id");
                         String imageId = value.getString("image_id");
 
@@ -193,6 +194,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         break;
                     }
                     case "location": {
+                        JSONObject value = jsonMessage.getJSONObject("value");
                         // Divide by 10 since incoming coordinates are 200x200 not 20x20
                         int xCoord = value.getInt("x") / 10;
                         int yCoord = value.getInt("y") / 10;
@@ -219,6 +221,12 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         }
                         break;
                     }
+                    case "info": {
+                        String value = jsonMessage.getString("value");
+                        TextView rbTV = findViewById(R.id.obstacleStatusTextView);
+                        rbTV.setText(value);
+                    }
+
                     default: {
                         displayMessage("Unrecognized Command\n" + fullMessage);
                         break;
