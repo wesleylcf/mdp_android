@@ -115,7 +115,7 @@
         android:layout_marginBottom="0sp"
         android:insetTop="2dp"
         android:insetBottom="4dp"
-        android:onClick="startExplore"
+        android:onClick="startStopTimer"
         android:text="@string/start_explore"
         style="@style/ExploreTabButton"
         app:layout_constraintBottom_toTopOf="@id/top_guideline15"

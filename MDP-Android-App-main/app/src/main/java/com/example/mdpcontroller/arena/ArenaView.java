@@ -116,6 +116,7 @@ public class ArenaView extends View {
         }
     }
 
+
     // Called whenever object of the class is called
     @Override
     protected  void onDraw(Canvas canvas){

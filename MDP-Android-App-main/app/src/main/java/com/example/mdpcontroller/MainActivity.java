@@ -224,22 +224,22 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         }
                         break;
                     }
+                    case "status":
                     case "info": {
                         String value = jsonMessage.getString("value");
                         TextView rbTV = findViewById(R.id.obstacleStatusTextView);
                         if (rbTV != null) {
                             rbTV.setText(value);
-                            displayMessage("INFO: " + value);
                         }
+                        displayMessage("INFO: " + value);
                         break;
                     }
-
                     default: {
                         displayMessage("Unrecognized Command\n" + fullMessage);
                         break;
                     }
                 }
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 displayMessage("ERROR (" + e.getMessage() + ")\n" + fullMessage);
             }
@@ -373,19 +373,20 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
     }
 
     public void chatBtn(View view){
-        String sendText = null;
-        EditText chatET = (EditText) findViewById(R.id.chatEditText);
 
-        if (chatET != null){
-            sendText = chatET.getText().toString();
-            System.out.println("Send Text = " + sendText);
-            chatET.setText("");
-        }
-        btService.write(String.format("%s", sendText), DEBUG);
-
-        // Collapse Keyboard on click
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+//        String sendText = null;
+//        EditText chatET = (EditText) findViewById(R.id.chatEditText);
+//
+//        if (chatET != null){
+//            sendText = chatET.getText().toString();
+//            System.out.println("Send Text = " + sendText);
+//            chatET.setText("");
+//        }
+//        btService.write(String.format("%s", sendText), DEBUG);
+//
+//        // Collapse Keyboard on click
+//        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
     public void clearChatBtn(View view) {
