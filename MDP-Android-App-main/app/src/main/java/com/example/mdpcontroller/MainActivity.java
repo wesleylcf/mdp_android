@@ -179,18 +179,31 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     case "image-rec": {
                         JSONObject value = jsonMessage.getJSONObject("value");
                         String obstacleId = value.getString("obstacle_id");
-                        String imageId = value.getString("image_id");
+                        String mappedId = value.getString("mapped_id");
 
-                        int imageIdInt = Integer.parseInt(imageId);
+                        int imageIdInt = Integer.parseInt(mappedId);
+                        boolean allRecognized = true;
+
                         if (imageIdInt < 11 || imageIdInt > 40) {
                             valid_image = false;
                         } else {
                             valid_image = true;
-                            valid_target = arena.setObstacleImageID(obstacleId, imageId);
-                            displayMessage("Obstacle ID: " + obstacleId + "Image ID: " + imageId);
+                            valid_target = arena.setObstacleImageID(obstacleId, mappedId);
+                            displayMessage("Obstacle ID: " + obstacleId + " Image ID: " + mappedId);
                         }
                         if (!valid_target || !valid_image) {
                             displayMessage("Invalid imageID or obstacleID: " + fullMessage);
+                        }
+                        for (Obstacle obs: arena.obstacles) {
+                            if (obs.imageID.equals("-1")) {
+                                allRecognized = false;
+                                break;
+                            }
+                        }
+
+                        if (allRecognized) {
+                            Button stopExploreBtn = findViewById(R.id.startExplore);
+                            stopTimer(stopExploreBtn);
                         }
                         break;
                     }
@@ -400,12 +413,10 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         chatET.setText(""); // Clear input field
 
         ArrayList<Obstacle> obs = new ArrayList<>();
-        // Obstacles string format: 1,2,0;3,4,0;5,6,1
-        String[] splitTextArray = sendText.split(";");
+        // Obstacles string format: 1,2,r.3,4,l.5,6,u
+        String[] splitTextArray = sendText.split("\\.");
         int imageID = 1;
-
-        // Map for direction conversion
-        String[] directions = {"RIGHT", "TOP", "LEFT", "BOTTOM"};
+        String dir = "TOP";
 
         for (String splitText : splitTextArray) {
             String[] coordinates = splitText.split(",");
@@ -414,9 +425,18 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
             try {
                 int x = Integer.parseInt(coordinates[0]);
                 int y = 19 - Integer.parseInt(coordinates[1]);
-                int imgDirIndex = Integer.parseInt(coordinates[2]);
-
-                String dir = (imgDirIndex >= 0 && imgDirIndex < directions.length) ? directions[imgDirIndex] : "TOP";
+                String imgDir = coordinates[2];
+                // Map for direction conversion
+                switch(imgDir){
+                    case("r"):
+                    case("R"): dir = "RIGHT"; break;
+                    case("u"):
+                    case("U"): dir = "TOP"; break;
+                    case("l"):
+                    case("L"): dir = "LEFT"; break;
+                    case("d"):
+                    case("D"): dir = "BOTTOM"; break;
+                }
 
                 obs.add(new Obstacle(new Cell(x, y), dir, String.valueOf(imageID)));
                 imageID++;
@@ -539,10 +559,6 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         this.api.sendArenaInfo(view, arena);
     }
 
-    public void startExplore(View view) {
-        this.api.startRobot(view);
-    }
-
     public void startTimer(Button b) {
         if (b.getId() == R.id.startExplore) {
             moveList.clear();
@@ -574,6 +590,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     displayMessage(String.format("Robot coordinates: (%d, %d)", center.col, 19-center.row));
                 }
             }
+            api.startRobot(arena);
 
 //            // Obstacle position
 //            for (int i = 0; i < arena.obstacles.size(); i++) {
@@ -593,7 +610,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 //                timerRunnable.startTime = 0;
 //            }
 //            btService.write(cmd.toString(), DEBUG);
-            api.sendArenaInfo(arena, arena);
+//            api.sendArenaInfo(arena, arena);
             TextView rbTV = findViewById(R.id.obstacleStatusTextView);
             rbTV.setText(R.string.calc_path);
             timerRunnable.startTime = System.currentTimeMillis();

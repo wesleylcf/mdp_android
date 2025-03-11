@@ -31,10 +31,12 @@
         class="com.example.mdpcontroller.arena.ArenaView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btm_guideline_3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btm_guideline_2"
-        app:layout_constraintBottom_toTopOf="@+id/btm_guideline_3" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <ScrollView
         android:id="@+id/SCROLLER_ID"
@@ -47,9 +49,10 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/btm_guideline_2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btm_guideline_1"
+        app:layout_constraintVertical_bias="0.775"
         tools:ignore="SpeakableTextPresentCheck">
 
         <EditText
