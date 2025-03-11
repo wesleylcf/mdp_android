@@ -187,6 +187,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                         } else {
                             valid_image = true;
                             valid_target = arena.setObstacleImageID(obstacleId, imageId);
+                            displayMessage("Obstacle ID: " + obstacleId + "Image ID: " + imageId);
                         }
                         if (!valid_target || !valid_image) {
                             displayMessage("Invalid imageID or obstacleID: " + fullMessage);
@@ -372,8 +373,7 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
         }
     }
 
-    public void chatBtn(View view){
-
+//    public void chatBtn(View view){
 //        String sendText = null;
 //        EditText chatET = (EditText) findViewById(R.id.chatEditText);
 //
@@ -387,7 +387,47 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
 //        // Collapse Keyboard on click
 //        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 //        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+//    }
+
+    public void chatBtn(View view) {
+        EditText chatET = findViewById(R.id.chatEditText);
+        if (chatET == null) return;
+
+        String sendText = chatET.getText().toString().trim();
+        if (sendText.isEmpty()) return;
+
+        System.out.println("Send Text = " + sendText);
+        chatET.setText(""); // Clear input field
+
+        ArrayList<Obstacle> obs = new ArrayList<>();
+        // Obstacles string format: 1,2,0;3,4,0;5,6,1
+        String[] splitTextArray = sendText.split(";");
+        int imageID = 1;
+
+        // Map for direction conversion
+        String[] directions = {"RIGHT", "TOP", "LEFT", "BOTTOM"};
+
+        for (String splitText : splitTextArray) {
+            String[] coordinates = splitText.split(",");
+            if (coordinates.length < 3) continue; // Ensure valid input
+
+            try {
+                int x = Integer.parseInt(coordinates[0]);
+                int y = 19 - Integer.parseInt(coordinates[1]);
+                int imgDirIndex = Integer.parseInt(coordinates[2]);
+
+                String dir = (imgDirIndex >= 0 && imgDirIndex < directions.length) ? directions[imgDirIndex] : "TOP";
+
+                obs.add(new Obstacle(new Cell(x, y), dir, String.valueOf(imageID)));
+                imageID++;
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid number format in input: " + splitText);
+            }
+        }
+        arena.setObstacles(obs);
+        arena.invalidate();
     }
+
 
     public void clearChatBtn(View view) {
         EditText chatET = (EditText) findViewById(R.id.chatEditText);

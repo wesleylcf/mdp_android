@@ -16,10 +16,12 @@ public class Obstacle {
         this.imageID = "-1";
         this.imageDir = "TOP";
     }
-    public Obstacle (Cell cell, boolean explored, String dir){
+
+    public Obstacle (Cell cell, String imageDir, String imageID){
         this.cell = cell;
-        this.explored = explored;
+        this.explored = false;
         this.imageDir = imageDir;
+        this.imageID = imageID;
     }
 
     public Cell getCell() {

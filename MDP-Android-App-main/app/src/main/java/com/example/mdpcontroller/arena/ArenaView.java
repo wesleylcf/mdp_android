@@ -116,7 +116,6 @@ public class ArenaView extends View {
         }
     }
 
-
     // Called whenever object of the class is called
     @Override
     protected  void onDraw(Canvas canvas){
@@ -447,6 +446,10 @@ public class ArenaView extends View {
         }
         int cellRadius = 10;
         canvas.drawRoundRect(cellRect, cellRadius, cellRadius, obstacleHeadPaint);
+    }
+
+    public void setObstacles(ArrayList<Obstacle> obs) {
+        obstacles = obs;
     }
 
     public boolean setObstacleImageID(String obstacleNumber, String imageID){
