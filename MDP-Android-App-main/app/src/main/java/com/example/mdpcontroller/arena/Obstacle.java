@@ -19,6 +19,7 @@ public class Obstacle {
 
     public Obstacle (Cell cell, String imageDir, String imageID){
         this.cell = cell;
+        this.cell.type = "obstacle";
         this.explored = false;
         this.imageDir = imageDir;
         this.imageID = imageID;

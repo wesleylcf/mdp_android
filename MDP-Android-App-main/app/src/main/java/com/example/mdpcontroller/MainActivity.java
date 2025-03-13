@@ -437,8 +437,8 @@ public class MainActivity<ActivityResultLauncher> extends AppCompatActivity impl
                     case("d"):
                     case("D"): dir = "BOTTOM"; break;
                 }
-
-                obs.add(new Obstacle(new Cell(x, y), dir, String.valueOf(imageID)));
+                Cell arenaCell = arena.cells[x][y];
+                obs.add(new Obstacle(arenaCell, dir, String.valueOf(imageID)));
                 imageID++;
             } catch (NumberFormatException e) {
                 System.err.println("Invalid number format in input: " + splitText);
